@@ -8,8 +8,25 @@
  */
 
 #include "topic.h"
+#include <sstream>
 
 Topic::~Topic() {}
+
+// Break a string into smaller tokens using a delimiter
+std::vector<std::string> Tokenize(const std::string input, const char delim)
+{
+    // Vector of string to save tokens 
+    std::vector<std::string> tokens;
+      
+    std::istringstream iss(input);
+    std::string tempstr;
+
+    // Break into the tokens
+    while (std::getline(iss, tempstr, delim))
+        tokens.push_back(tempstr);
+
+    return tokens;
+}
 
 Error Topic::read(std::string fname) 
 {
@@ -18,14 +35,14 @@ Error Topic::read(std::string fname)
     if( !f.is_open() ) {
         return FAILED_FILE_OPEN;
     }
-    // Define line data for string and double types
+    // Define input data for string and double types
     std::vector<std::string> splitString;
     std::vector<std::string> splitString2;
 
-    std::string line = "";
+    std::string input = "";
     double res;
 
-    // Logic for whether line width matches what we expect, based on first line
+    // Logic for whether input width matches what we expect, based on first input
     bool validLine = false;
     // Initialize loop counter
     uint32_t lcount = 0;
@@ -41,14 +58,14 @@ Error Topic::read(std::string fname)
     std::vector<int> dataind;
     // Initialize data indexs
     bool isThereTime = false;
-    // Remove first line as it contains text descriptions of column contents
-    getline(f,line);
-    boost::split(splitString, line, boost::is_any_of(","));
+    // Remove first input as it contains text descriptions of column contents
+    getline(f,input);
+    splitString = Tokenize(input, ',');
     ccount = splitString.size();
     // Process description text to identify indexes for processing each colomn
     for(int i = 0; i < ccount; i++)
     {
-        boost::split(splitString2, splitString[i], boost::is_any_of("."));
+        splitString2 = Tokenize(splitString[i], '.');
         if(!splitString[i].compare("time"))
         {
             timeind = i;
@@ -83,11 +100,11 @@ Error Topic::read(std::string fname)
     time.clear();
     data.clear();
     // Iterate over all lines and extract data
-    while( getline(f,line) && lcount < MAX_LINE_ITER ) 
+    while( getline(f,input) && lcount < MAX_LINE_ITER ) 
     {
         // Split string via comma delimitation
-        boost::split(splitString, line, boost::is_any_of(","));
-        // Initialize column count based on first line
+        splitString = Tokenize(input, ',');
+        // Initialize column count based on first input
         if(lcount == 0) 
         {
             // Save column count
@@ -178,24 +195,24 @@ Error Topic::read(std::string fname, std::vector<std::vector<std::string>> *data
     if( !f.is_open() ) {
         return FAILED_FILE_OPEN;
     }
-    // Define line data for string and double types
+    // Define input data for string and double types
     std::vector<std::string> splitString;
-    std::string line = "";
+    std::string input = "";
 
-    // Logic for whether line width matches what we expect, based on first line
+    // Logic for whether input width matches what we expect, based on first input
     bool validLine = false;
     // Initialize loop counter
     uint32_t lcount = 0;
     // Initialize column counter
     size_t ccount = 0;
 
-    // Remove first line as it contains text descriptions of column contents
-    getline(f,line);
+    // Remove first input as it contains text descriptions of column contents
+    getline(f,input);
     // Iterate over all lines and extract data
-    while( getline(f,line) && lcount < MAX_LINE_ITER ) {
+    while( getline(f,input) && lcount < MAX_LINE_ITER ) {
         // Split string via comma delimitation
-        boost::split(splitString, line, boost::is_any_of(","));
-        // Initialize column count based on first line
+        splitString = Tokenize(input, ',');
+        // Initialize column count based on first input
         if(lcount == 0) {
             data->resize(splitString.size());
             // Save column count

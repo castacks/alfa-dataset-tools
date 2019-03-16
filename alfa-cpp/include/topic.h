@@ -22,8 +22,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include <boost/algorithm/string.hpp>
-
 #define MAX_LINE_ITER 100000
 
 class Topic {
