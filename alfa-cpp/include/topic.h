@@ -10,8 +10,6 @@
 #ifndef TOPIC_H
 #define TOPIC_H
 
-#include "error.h"
-
 #include <string>
 #include <vector>
 #include <fstream>
@@ -52,11 +50,12 @@ public:
     std::vector<std::vector<double>> data;
     std::vector<std::string> data_labels;
 
-    Error read(std::string fname);
-    Error read(std::string fname, std::vector<std::vector<std::string>> *data);
-    Error writeLog(std::string fname, std::vector<std::vector<double>> data);
+    bool read(std::string fname);
+    bool read(std::string fname, std::vector<std::vector<std::string>> *data);
+    bool writeLog(std::string fname, std::vector<std::vector<double>> data);
 
 private:
+    std::vector<std::string> Tokenize(const std::string input, const char delim);
     std::string delim;
 }; // Topic
 

@@ -1,9 +1,11 @@
-/*    main.cpp - Sample file to demonstrate how to use libraries and dataset files
+/*  main.cpp - Sample file to demonstrate how to use libraries and dataset files
 *                 
-*    Carnegie Mellon University
-*    Authors: Mohammadreza Mousaei
-*    Contact: mmousaei@andrew.cmu.edu
+*   Air Lab, Robotics Institute, Carnegie Mellon University
 *
+*   Authors: Azarakhsh Keipour, Mohammadreza Mousaei
+*   Contact: keipour@cmu.edu
+*
+*   Last Modified: March 16, 2019
 */
 
 #include "topic.h"
@@ -34,15 +36,15 @@ int main(int argc, char** argv)
 
     // Print the data
     std::cout<<"--SAMPLE--"<<std::endl;
-    for(int i = 0; i < topic.size; i++)
+    for(int i = 0; i < 1/*topic.size*/; i++)
     {
-    std::cout<<"Time in line "<<i<<" is: "<<topic.time[i]<<std::endl;
-    std::cout<<"Header seq in line "<<i<<" is: "<<topic.header[i].seq<<std::endl;
-    std::cout<<"Header sec timestamp in line "<<i<<" is: "<<topic.header[i].stamp.secs<<std::endl;
-    std::cout<<"Header nsec timestamp in line "<<i<<" is: "<<topic.header[i].stamp.nsecs<<std::endl;
-    std::cout<<"Header frame in line "<<i<<" is: "<<topic.header[i].frame<<std::endl;
-    std::cout<<topic.data_labels[0]<<" in line "<<i<<" is: "<<topic.data[0][i]<<std::endl;
-    std::cout<<topic.data_labels[1]<<" in line "<<i<<" is: "<<topic.data[1][i]<<std::endl;
+        std::cout<<"Time in line "<<i<<" is: "<<topic.time[i]<<std::endl;
+        std::cout<<"Header seq in line "<<i<<" is: "<<topic.header[i].seq<<std::endl;
+        std::cout<<"Header sec timestamp in line "<<i<<" is: "<<topic.header[i].stamp.secs<<std::endl;
+        std::cout<<"Header nsec timestamp in line "<<i<<" is: "<<topic.header[i].stamp.nsecs<<std::endl;
+        std::cout<<"Header frame in line "<<i<<" is: "<<topic.header[i].frame<<std::endl;
+        std::cout<<topic.data_labels[0]<<" in line "<<i<<" is: "<<topic.data[0][i]<<std::endl;
+        std::cout<<topic.data_labels[1]<<" in line "<<i<<" is: "<<topic.data[1][i]<<std::endl;
     }
 
     return 0;

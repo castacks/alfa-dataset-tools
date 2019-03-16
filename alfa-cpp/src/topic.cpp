@@ -12,29 +12,16 @@
 
 Topic::~Topic() {}
 
-// Break a string into smaller tokens using a delimiter
-std::vector<std::string> Tokenize(const std::string input, const char delim)
-{
-    // Vector of string to save tokens 
-    std::vector<std::string> tokens;
-      
-    std::istringstream iss(input);
-    std::string tempstr;
-
-    // Break into the tokens
-    while (std::getline(iss, tempstr, delim))
-        tokens.push_back(tempstr);
-
-    return tokens;
-}
-
-Error Topic::read(std::string fname) 
+bool Topic::read(std::string fname)
 {
     // Open file stream to given csv
     std::ifstream f(fname);
-    if( !f.is_open() ) {
-        return FAILED_FILE_OPEN;
+    if( !f.is_open() ) 
+    {
+        std::cerr << "Failed to open file." << std::endl;
+        return false;
     }
+
     // Define input data for string and double types
     std::vector<std::string> splitString;
     std::vector<std::string> splitString2;
@@ -92,7 +79,8 @@ Error Topic::read(std::string fname)
 
     if(!isThereTime)
     {
-        return NO_TIME_DATA;
+        std::cerr << "No timestamp data found. Aborting reading the topic." << std::endl;
+        return false;
     }
         
     // Clear old data
@@ -174,27 +162,34 @@ Error Topic::read(std::string fname)
     // Close file
     f.close();
     if(!headerind.size())
+    if(!isThereTime)
     {
-        return NO_HEADER_DATA;
+        std::cerr << "No header data found!" << std::endl;
+        return false;
     }
     if(header.size() == time.size())
     {
         size = header.size();
     }
     else
+    if(!isThereTime)
     {
-        return READ_FAIL;
+        std::cerr << "Failed to read the file." << std::endl;
+        return false;
     }
     
-    return NO_ERROR;
+    return true;
 }
 
-Error Topic::read(std::string fname, std::vector<std::vector<std::string>> *data) {
+bool Topic::read(std::string fname, std::vector<std::vector<std::string>> *data) {
     // Open file stream to given csv
     std::ifstream f(fname);
-    if( !f.is_open() ) {
-        return FAILED_FILE_OPEN;
+    if( !f.is_open() ) 
+    {
+        std::cerr << "Failed to open file." << std::endl;
+        return false;
     }
+
     // Define input data for string and double types
     std::vector<std::string> splitString;
     std::string input = "";
@@ -239,10 +234,10 @@ Error Topic::read(std::string fname, std::vector<std::vector<std::string>> *data
     // Close file
     f.close();
 
-    return NO_ERROR;
+    return true;
 }
 
-Error Topic::writeLog(std::string fname, std::vector<std::vector<double>> data) {
+bool Topic::writeLog(std::string fname, std::vector<std::vector<double>> data) {
 
     // Open file stream to given csv
     std::ofstream f(fname);
@@ -264,5 +259,21 @@ Error Topic::writeLog(std::string fname, std::vector<std::vector<double>> data) 
         }
     }
 
-    return NO_ERROR;
+    return true;
+}
+
+// Break a string into smaller tokens using a delimiter
+std::vector<std::string> Topic::Tokenize(const std::string input, const char delim)
+{
+    // Vector of string to save tokens 
+    std::vector<std::string> tokens;
+      
+    std::istringstream iss(input);
+    std::string tempstr;
+
+    // Break into the tokens
+    while (std::getline(iss, tempstr, delim))
+        tokens.push_back(tempstr);
+
+    return tokens;
 }
