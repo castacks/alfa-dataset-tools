@@ -277,3 +277,8 @@ std::vector<std::string> Topic::Tokenize(const std::string input, const char del
 
     return tokens;
 }
+
+bool Topic::ReadTopicFromFile(std::string filename)
+{
+    return false;
+}

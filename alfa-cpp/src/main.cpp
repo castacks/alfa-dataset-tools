@@ -1,14 +1,24 @@
-/*  main.cpp - Sample file to demonstrate how to use libraries and dataset files
-*                 
+/*  ***************************************************************************
+*   main.cpp - Demonstrates the usage of ALFA libraries and dataset.
+*   
+*   For more information about the dataset, please refer to:
+*   http://theairlab.org/alfa-dataset
+*
+*   For more information about this project and the publications related to 
+*   the dataset and this work, please refer to:
+*   http://theairlab.org/fault-detection-project
+*
 *   Air Lab, Robotics Institute, Carnegie Mellon University
 *
-*   Authors: Azarakhsh Keipour, Mohammadreza Mousaei
+*   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: March 16, 2019
-*/
+*   Last Modified: April 01, 2019
+*   ***************************************************************************/
 
 #include "topic.h"
+#include "topic2.h"
+#include "commons.h"
 #include <iostream>
 #include <string>
 
@@ -23,6 +33,14 @@ std::string ParseCommandLine(int argc, char** argv);
 
 int main(int argc, char** argv)
 {
+    std::string pth = "/home/azarakhsh/ALFA-Dataset Tools/alfa-cpp/csv/sample.csv";
+    alfa::Topic2 ttt(pth);
+    std::cout << ttt.DataItems.size() << std::endl;
+    for (int i = 0; i < 10 /*ttt.DataItems.size()*/; ++i)
+    {
+        std::cout << ttt.DataItems[i] << std::endl;
+    }
+
     // Read the dataset name/path from command-line arguments
     std::string sequenceName;
     sequenceName = ParseCommandLine(argc, argv);

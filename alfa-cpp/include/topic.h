@@ -44,6 +44,8 @@ public:
         std::string frame;
     };
     
+    bool ReadTopicFromFile(std::string filename);
+
     int size;
     std::vector<std::string> time;
     std::vector<Header> header;
