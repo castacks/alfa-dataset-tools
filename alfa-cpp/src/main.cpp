@@ -13,11 +13,10 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 01, 2019
+*   Last Modified: April 07, 2019
 *   ***************************************************************************/
 
 #include "topic.h"
-#include "topic2.h"
 #include "commons.h"
 #include <iostream>
 #include <string>
@@ -33,14 +32,6 @@ std::string ParseCommandLine(int argc, char** argv);
 
 int main(int argc, char** argv)
 {
-    std::string pth = "/home/azarakhsh/ALFA-Dataset Tools/alfa-cpp/csv/sample.csv";
-    alfa::Topic2 ttt(pth);
-    std::cout << ttt.DataItems.size() << std::endl;
-    for (int i = 0; i < 10 /*ttt.DataItems.size()*/; ++i)
-    {
-        std::cout << ttt.DataItems[i] << std::endl;
-    }
-
     // Read the dataset name/path from command-line arguments
     std::string sequenceName;
     sequenceName = ParseCommandLine(argc, argv);
@@ -49,21 +40,11 @@ int main(int argc, char** argv)
     if (sequenceName.empty()) return 0;
 
     // Read the data from the given directory 
-    Topic topic;
-    topic.read(sequenceName);
-
-    // Print the data
-    std::cout<<"--SAMPLE--"<<std::endl;
-    for(int i = 0; i < 1/*topic.size*/; i++)
-    {
-        std::cout<<"Time in line "<<i<<" is: "<<topic.time[i]<<std::endl;
-        std::cout<<"Header seq in line "<<i<<" is: "<<topic.header[i].seq<<std::endl;
-        std::cout<<"Header sec timestamp in line "<<i<<" is: "<<topic.header[i].stamp.secs<<std::endl;
-        std::cout<<"Header nsec timestamp in line "<<i<<" is: "<<topic.header[i].stamp.nsecs<<std::endl;
-        std::cout<<"Header frame in line "<<i<<" is: "<<topic.header[i].frame<<std::endl;
-        std::cout<<topic.data_labels[0]<<" in line "<<i<<" is: "<<topic.data[0][i]<<std::endl;
-        std::cout<<topic.data_labels[1]<<" in line "<<i<<" is: "<<topic.data[1][i]<<std::endl;
-    }
+    alfa::Topic2 topic(sequenceName);
+    
+    // Print the number of data items read and the first 10 items
+    std::cout << topic.DataItems.size() << std::endl;
+    topic.Print(0, 10);
 
     return 0;
 }
@@ -74,11 +55,11 @@ std::string ParseCommandLine(int argc, char** argv)
     if ((argc != 3) || (argv[argc-1] == NULL) || (argv[argc-1][0] == '-') ) 
     {
         // The input is in incorrect format
-        std::cout << "Please provide the path and name of the dataset!" << std::endl;
+        std::cout << "Please provide the path and name of the sequence!" << std::endl;
         std::cout << "Usage (in Linux/Mac):" << std::endl;
-        std::cout << "./main path/to/dataset/folder sequence_name" << std::endl;
+        std::cout << "./main path/to/sequence/folder sequence_name" << std::endl;
         std::cout << "Usage (in Windows):" << std::endl;
-        std::cout << "main.exe path\\to\\dataset\\folder sequence_name" << std::endl;
+        std::cout << "main.exe path\\to\\sequence\\folder sequence_name" << std::endl;
         return "";
     }
 
