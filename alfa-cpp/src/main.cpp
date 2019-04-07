@@ -40,10 +40,9 @@ int main(int argc, char** argv)
     if (sequenceName.empty()) return 0;
 
     // Read the data from the given directory 
-    alfa::Topic2 topic(sequenceName);
-    
-    // Print the number of data items read and the first 10 items
-    std::cout << topic.DataItems.size() << std::endl;
+    alfa::Topic topic(sequenceName);
+
+    // Print the first 10 data items
     topic.Print(0, 10);
 
     return 0;

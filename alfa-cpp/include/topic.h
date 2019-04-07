@@ -1,5 +1,5 @@
 /*  ***************************************************************************
-*   topic.h - Header for working with topics of the ALFA dataset sequences.
+*   topic.h - Header for working with the topics of ALFA dataset sequences.
 *   
 *   For more information about the dataset, please refer to:
 *   http://theairlab.org/alfa-dataset
@@ -26,81 +26,30 @@
 #include <cstdio>
 #include <iomanip>
 #include <ctime>
+#include <algorithm>
 #include "commons.h"
+#include "data_item.h"
 
 namespace alfa
 {
 
-class Topic2
+class Topic
 {
 public:
-    // Structs, subclasses and type definitions
-    typedef std::vector<std::string> VecString;
-
-    struct HeaderType
-    {
-        int SequenceID;
-        struct StampType { int Secs; int NanoSecs; } TimeStamp;
-        std::string FrameID;
-    };
-
-    class Item
-    {
-    public:
-        Commons::DateTime DateTime;
-        HeaderType Header;
-        VecString DataFields;
-        friend std::ostream& operator<< (std::ostream& os, const Item& it)
-        {
-            os << it.ToString();
-            return os;
-        }
-
-        std::string ToString(std::string separator = " | ") const
-        {
-            return ToString(5, 10, 9, 0, std::vector<int>(DataFields.size()));
-        }
-
-        std::string ToString(int l_seq, int l_secs, int l_nsecs, int l_frid, std::vector<int> l_fields, std::string separator = " | ") const
-        {
-            std::ostringstream oss;
-            oss << DateTime << separator << 
-                std::setw(l_seq) << Header.SequenceID << separator <<
-                std::setw(l_secs) << Header.TimeStamp.Secs << separator << 
-                std::setw(l_nsecs) << Header.TimeStamp.NanoSecs << separator << 
-                std::setw(l_frid) << Header.FrameID;
-
-            for (int i = 0; i < DataFields.size(); ++i)
-                oss << separator << std::setw(l_fields[i]) << DataFields[i];
-            
-            return oss.str();
-        }
-
-        bool operator< (const Item &it) const
-        {
-            return (this->DateTime < it.DateTime);
-        }
-
-        Item& operator= (const Item &it)
-        {
-            // TODO
-            return *this;
-        }
-    };
 
     // Class Data Members
     std::string Name;
     std::string FileName;
-    VecString FieldLabels;
-    VecString FieldDataTypes;
-    std::vector<Item> DataItems;
+    VecString FieldLabel;
+    std::vector<DataItem> DataItems;
 
     // Constructors & Deconstructors
-    Topic2(std::string filename = "");
+    Topic(std::string filename = "");
 
     // Member Functions
     bool ReadFromFile(std::string filename);
     void Print(int n_start = 0, int n_items = -1, std::string field_separator = " | ");
+    void PrintHeader(std::string field_separator = " | ");
     bool IsInitialized();
     void Clear();
 
@@ -109,22 +58,33 @@ private:
     bool is_initialized = false;
 
     // Member Functions
-    Item TokensToItem(const VecString &tokens);
+    DataItem TokensToItem(const VecString &tokens);
+    void ProcessHeader();
 
     // Maximum length of the data fields (for better printing)
     int len_seqid = 0, len_secs = 0, len_nsecs = 0, len_frameid = 0;
     std::vector<int> len_fields;
+
+    // Pre-processed field labels from the CSV file
+    VecString orig_field_labels;
+
+    // Header strings for printing
+    const std::string hdr_ind = "Index", hdr_datetime = "Date/Time Stamp";
+    const std::string hdr_seq = "SeqID", hdr_secs = "Secs", hdr_nsecs = "NanoSecs", hdr_frid = "Frame";
+
 };
 
+/******************************************************************************/
+/************************** Function Definitions ******************************/
+/******************************************************************************/
 
-
-Topic2::Topic2(std::string filename)
+Topic::Topic(std::string filename)
 {
     if (filename.compare("") != 0)
         ReadFromFile(filename);
 }
 
-bool Topic2::ReadFromFile(std::string filename)
+bool Topic::ReadFromFile(std::string filename)
 {
     this->FileName = filename;
 
@@ -143,7 +103,7 @@ bool Topic2::ReadFromFile(std::string filename)
     std::string line;
     if (std::getline(ifs, line))
     {
-        this->FieldLabels = Commons::Tokenize(line, Commons::CSVDelimiter);
+        this->orig_field_labels = Commons::Tokenize(line, Commons::CSVDelimiter);
     }
     else
     {
@@ -157,7 +117,7 @@ bool Topic2::ReadFromFile(std::string filename)
     {
         line_number++;
         auto tokens = Commons::Tokenize(line, Commons::CSVDelimiter);
-        if (tokens.size() != this->FieldLabels.size())
+        if (tokens.size() != this->orig_field_labels.size())
         {
             std::cerr << "Error converting line #" << line_number << " of '" << filename << "'." << std::endl;
             continue;
@@ -165,67 +125,117 @@ bool Topic2::ReadFromFile(std::string filename)
         this->DataItems.push_back(TokensToItem(tokens));
     }
 
+    // Postprocess the header labels
+    ProcessHeader();
+
+    // Initialization done
+    is_initialized = true;
+
     return IsInitialized();
 }
 
-void Topic2::Print(int n_start, int n_items, std::string field_separator)
+void Topic::Print(int n_start, int n_items, std::string field_separator)
 {
     if (n_start < 0) return;
 
     if (n_items < 0) 
         n_items = DataItems.size();
 
-    std::cout << "Index" << field_separator << std::endl;
+    PrintHeader(field_separator);
 
     for (int i = n_start; (i < n_start + n_items) && (i < DataItems.size()); ++i)
-        std::cout << std::setw(5) << i << field_separator << 
+        std::cout << field_separator << std::setw(hdr_ind.length()) << i << field_separator << 
             DataItems[i].ToString(len_seqid, len_secs, len_nsecs, len_frameid, len_fields, field_separator) 
-            << std::endl;
+            << field_separator << std::endl;
 }
 
-Topic2::Item Topic2::TokensToItem(const VecString &tokens)
+void Topic::PrintHeader(std::string field_separator)
 {
-    Item item;
-    ".header.seq,.header.stamp.secs,.header.stamp.nsecs,.header.frame_id";
-    for (int i = 0; i < FieldLabels.size(); ++i)
+    // Ignore if there are no data items
+    if (DataItems.size() == 0) return;
+
+    // Measure the length for the datetime string
+    int len_datetime = DataItems[0].DateTime.ToString().length();
+
+    // Measure the total line length
+    int total_len = hdr_ind.length() + len_datetime + len_seqid + len_secs + len_nsecs + len_frameid;
+    for (int i = 0; i < FieldLabel.size(); ++i)
+        total_len += len_fields[i];
+    total_len += (7 + FieldLabel.size()) * field_separator.length();
+
+    // Print the index, time and the Header object
+    std::cout << field_separator << hdr_ind << field_separator << std::setw(len_datetime) << hdr_datetime <<
+            field_separator << std::setw(len_seqid) << hdr_seq << field_separator <<
+            std::setw(len_secs) << hdr_secs << field_separator << std::setw(len_nsecs) << 
+            hdr_nsecs << field_separator << std::setw(len_frameid) << hdr_frid;
+
+    // Print the rest of the field labels
+    for (int i = 0; i < FieldLabel.size(); ++i)
+        std::cout << field_separator << std::setw(len_fields[i]) << FieldLabel[i];
+
+    // Finish the line
+    std::cout << field_separator << std::endl;
+
+    // Print a line to separate labels from the data
+    for (int i = 0; i < total_len; ++i)
+        std::cout << '-';
+    std::cout << std::endl;
+}
+
+bool Topic::IsInitialized()
+{
+    return is_initialized;
+}
+
+DataItem Topic::TokensToItem(const VecString &tokens)
+{
+    int l_seq = 0, l_secs = 0, l_nsecs = 0, l_frid = 0;
+    std::vector<int> l_fields;
+
+    // Convert the tokens to a data item
+    DataItem item = DataItem::TokensToItem(tokens, orig_field_labels, l_seq, l_secs, l_nsecs, l_frid, l_fields);
+    len_seqid = std::max(len_seqid, l_seq);
+    len_secs = std::max(len_secs, l_secs);
+    len_nsecs = std::max(len_nsecs, l_nsecs);
+    len_frameid = std::max(len_frameid, l_frid);
+    for (int i = 0; i < l_fields.size(); ++i)
     {
-        if (FieldLabels[i].compare("time") == 0)
-            item.DateTime = Commons::DateTime::StringToTime(tokens[i], Commons::CSVDateTimeFormat);
-        else if (FieldLabels[i].compare(".header.seq") == 0)
-        {
-            Commons::StringToInt(tokens[i], item.Header.SequenceID);
-            if (tokens[i].length() > len_seqid) len_seqid = tokens[i].length();
-        }
-        else if (FieldLabels[i].compare(".header.stamp.secs") == 0)
-        {
-            Commons::StringToInt(tokens[i], item.Header.TimeStamp.Secs);
-            if (tokens[i].length() > len_secs) len_secs = tokens[i].length();
-        }
-        else if (FieldLabels[i].compare(".header.stamp.nsecs") == 0)
-        {
-            Commons::StringToInt(tokens[i], item.Header.TimeStamp.NanoSecs);
-            if (tokens[i].length() > len_nsecs) len_nsecs = tokens[i].length();
-        }
-        else if (FieldLabels[i].compare(".header.frame_id") == 0)
-        {
-            item.Header.FrameID = tokens[i];
-            if (tokens[i].length() > len_frameid) len_frameid = tokens[i].length();
-        }
+        if (i == len_fields.size())
+            len_fields.push_back(l_fields[i]);
         else
-        {
-            item.DataFields.push_back(tokens[i]);
-            if (len_fields.size() < item.DataFields.size()) 
-                len_fields.push_back(0);
-            if (tokens[i].length() > len_fields[item.DataFields.size() - 1]) 
-                len_fields[item.DataFields.size() - 1] = tokens[i].length();
-        }
+            len_fields[i] = std::max(len_fields[i], l_fields[i]);
     }
+
     return item;
 }
 
-bool Topic2::IsInitialized()
+void Topic::ProcessHeader()
 {
-    return is_initialized;
+    // Iterate through all the column labels read from file
+    for (int i = 0; i < orig_field_labels.size(); ++i)
+    {
+        // Ignore if it is for the timestamp of the header class
+        if (orig_field_labels[i].compare("time") == 0
+            || orig_field_labels[i].compare(".header.seq") == 0
+            || orig_field_labels[i].compare(".header.stamp.secs") == 0
+            || orig_field_labels[i].compare(".header.stamp.nsecs") == 0
+            || orig_field_labels[i].compare(".header.frame_id") == 0)
+            continue;
+
+        // Remove the starting '.' if the label starts with it
+        if (orig_field_labels[i][0] == '.')
+            FieldLabel.push_back(orig_field_labels[i].substr(1));
+        else
+            FieldLabel.push_back(orig_field_labels[i]);
+    }
+
+    // Update the minimum spaces needed for printing each field
+    len_seqid = std::max(len_seqid, (int)hdr_seq.length());
+    len_secs = std::max(len_secs, (int)hdr_secs.length());
+    len_nsecs = std::max(len_nsecs, (int)hdr_nsecs.length());
+    len_frameid = std::max(len_frameid, (int)hdr_frid.length());
+    for (int i = 0; i < FieldLabel.size(); ++i)
+        len_fields[i] = std::max(len_fields[i], (int)FieldLabel[i].length());
 }
 
 }

@@ -1,5 +1,5 @@
 /*  ***************************************************************************
-*   Commons.h - Header for Commons for ALFA dataset libraries.
+*   Commons.h - Header for common stuff for ALFA dataset libraries.
 *   
 *   For more information about the dataset, please refer to:
 *   http://theairlab.org/alfa-dataset
@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 01, 2019
+*   Last Modified: April 07, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_Commons_H
@@ -30,6 +30,9 @@
 namespace alfa
 {
 
+// Typedefs
+typedef std::vector<std::string> VecString;
+
 class Commons
 {
 public:
@@ -41,71 +44,16 @@ public:
     // Member Functions
     static std::vector<std::string> Tokenize(const std::string input, const char delim);
     static bool StringToInt(std::string str, int &out_number);
-
-    // Subclasses
-    class DateTime
-    {
-    public: 
-        int Year = 0, Month = 0, Day = 0, Hour = 0, Minute = 0, Second = 0, Microsecond = 0;
-
-        friend std::ostream& operator<< (std::ostream& os, const DateTime &dt)
-        {
-            char buffer [30];
-            sprintf (buffer, "%04d/%02d/%02d %02d:%02d:%02d.%06d", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, dt.Microsecond);
-            os << buffer;
-            return os;
-        }
-
-        bool operator< (const DateTime &dt) const
-        {
-            if (Year < dt.Year) return true;
-            if (Year > dt.Year) return false;
-
-            if (Month < dt.Month) return true;
-            if (Month > dt.Month) return false;
-            
-            if (Day < dt.Day) return true;
-            if (Day > dt.Day) return false;
-            
-            if (Hour < dt.Hour) return true;
-            if (Hour > dt.Hour) return false;
-            
-            if (Minute < dt.Minute) return true;
-            if (Minute > dt.Minute) return false;
-
-            if (Second < dt.Second) return true;
-            if (Second > dt.Second) return false;
-
-            if (Microsecond < dt.Microsecond) return true;
-            return false;
-        }
-
-        DateTime& operator= (const DateTime &dt)
-        {
-            Year = dt.Year;
-            Month = dt.Month;
-            Day = dt.Day;
-            Hour = dt.Hour;
-            Minute = dt.Minute;
-            Second = dt.Second;
-            Microsecond = dt.Microsecond;
-            return *this;
-        }
-
-        static DateTime StringToTime(std::string strdatetime, std::string format)
-        {
-            DateTime dt;
-            
-            !sscanf(strdatetime.c_str(), format.c_str(), 
-                        &dt.Year, &dt.Month, &dt.Day, &dt.Hour, &dt.Minute, &dt.Second, &dt.Microsecond);
-            
-            return dt;
-        }
-    };
-
 };
+
+/******************************************************************************/
+/********************** Commons Function Definitions **************************/
+/******************************************************************************/
+
+// The delimiter used in the topic CSV files to separate the data fields
 const char Commons::CSVDelimiter = ',';
 
+// The OS-specific separator for the file paths
 const char PathSeparator = 
 #if defined _WIN32 || defined __CYGWIN__
     '\\';
@@ -113,6 +61,7 @@ const char PathSeparator =
     '/';
 #endif
 
+// The format of the datetime in the topic CSV files
 const std::string Commons::CSVDateTimeFormat = "%d/%d/%d/%d:%d:%d.%d";
 
 
@@ -122,6 +71,7 @@ std::vector<std::string> Commons::Tokenize(const std::string input, const char d
     // Vector of string to save tokens 
     std::vector<std::string> tokens;
       
+    // Define the input string stream and the temporary string
     std::istringstream iss(input);
     std::string tempstr;
 
@@ -132,18 +82,93 @@ std::vector<std::string> Commons::Tokenize(const std::string input, const char d
     return tokens;
 }
 
+// Convert a string to an integer type. Returns false if the string is not exactly an integer.
 bool Commons::StringToInt(std::string str, int &out_number)
 {
     char *endptr;
     long value = std::strtol(str.c_str(), &endptr, 10);
-    if (*endptr == '\0')
-    {
-        out_number = (int)value;
-        return true;
-    }
+    
+    // if the conversion is not successful
+    if (*endptr != '\0')
+        return false;
+
+    // Otherwise, convert to integer
+    out_number = (int)value;
+    return true;
+}
+
+/******************************************************************************/
+/********************** DateTime Class Definition *****************************/
+/******************************************************************************/
+
+class DateTime
+{
+public: 
+    // Data Members
+    int Year = 0, Month = 0, Day = 0, Hour = 0, Minute = 0, Second = 0, Microsecond = 0;
+
+    // Member Functions
+    bool operator< (const DateTime &dt) const;
+    static DateTime StringToTime(std::string strdatetime, std::string format);
+    std::string ToString() const;
+};
+
+/******************************************************************************/
+/********************** DateTime Function Definitions *************************/
+/******************************************************************************/
+
+// Overload the << operator for DateTime
+std::ostream& operator<< (std::ostream& os, const DateTime &dt)
+{
+    os << dt.ToString();
+    return os;
+}
+
+// Overload the < operator for DateTime
+bool DateTime::operator< (const DateTime &dt) const
+{
+    if (Year < dt.Year) return true;
+    if (Year > dt.Year) return false;
+
+    if (Month < dt.Month) return true;
+    if (Month > dt.Month) return false;
+    
+    if (Day < dt.Day) return true;
+    if (Day > dt.Day) return false;
+    
+    if (Hour < dt.Hour) return true;
+    if (Hour > dt.Hour) return false;
+    
+    if (Minute < dt.Minute) return true;
+    if (Minute > dt.Minute) return false;
+
+    if (Second < dt.Second) return true;
+    if (Second > dt.Second) return false;
+
+    if (Microsecond < dt.Microsecond) return true;
     return false;
 }
 
+// Convert a given string to a DateTime object given the specified format
+DateTime DateTime::StringToTime(std::string strdatetime, std::string format)
+{
+    DateTime dt;
+    
+    // Parse the string using the format
+    sscanf(strdatetime.c_str(), format.c_str(), 
+                &dt.Year, &dt.Month, &dt.Day, &dt.Hour, &dt.Minute, &dt.Second, &dt.Microsecond);
+    
+    return dt;
+}
+
+// Convert DateTime object to string
+std::string DateTime::ToString() const
+{
+    // Write the date and time in a character array
+    char buffer [30];
+    sprintf(buffer, "%04d/%02d/%02d %02d:%02d:%02d.%06d", Year, Month, Day, Hour, Minute, Second, Microsecond);
+    return buffer;
+}    
 
 }
 #endif
