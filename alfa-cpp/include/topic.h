@@ -28,11 +28,12 @@
 #include <ctime>
 #include <algorithm>
 #include "commons.h"
-#include "data_item.h"
+#include "message.h"
 
 namespace alfa
 {
 
+// This class keeps the information of a single topic in a dataset sequence
 class Topic
 {
 public:
@@ -40,15 +41,15 @@ public:
     // Class Data Members
     std::string Name;
     std::string FileName;
-    VecString FieldLabel;
-    std::vector<DataItem> DataItems;
+    VecString FieldLabels;
+    std::vector<Message> Messages;
 
     // Constructors & Deconstructors
     Topic(std::string filename = "");
 
     // Member Functions
     bool ReadFromFile(std::string filename);
-    void Print(int n_start = 0, int n_items = -1, std::string field_separator = " | ");
+    void Print(int n_start = 0, int n_messages = -1, std::string field_separator = " | ");
     void PrintHeader(std::string field_separator = " | ");
     bool IsInitialized();
     void Clear();
@@ -58,7 +59,7 @@ private:
     bool is_initialized = false;
 
     // Member Functions
-    DataItem TokensToItem(const VecString &tokens);
+    Message TokensToMessage(const VecString &tokens);
     void ProcessHeader();
 
     // Maximum length of the data fields (for better printing)
@@ -71,7 +72,6 @@ private:
     // Header strings for printing
     const std::string hdr_ind = "Index", hdr_datetime = "Date/Time Stamp";
     const std::string hdr_seq = "SeqID", hdr_secs = "Secs", hdr_nsecs = "NanoSecs", hdr_frid = "Frame";
-
 };
 
 /******************************************************************************/
@@ -89,7 +89,7 @@ bool Topic::ReadFromFile(std::string filename)
     this->FileName = filename;
 
     // Clear the previous data from the object
-    //this->Clear();
+    this->Clear();
 
     // Open the file
     std::ifstream ifs (filename);
@@ -122,7 +122,7 @@ bool Topic::ReadFromFile(std::string filename)
             std::cerr << "Error converting line #" << line_number << " of '" << filename << "'." << std::endl;
             continue;
         }
-        this->DataItems.push_back(TokensToItem(tokens));
+        this->Messages.push_back(TokensToMessage(tokens));
     }
 
     // Postprocess the header labels
@@ -134,34 +134,34 @@ bool Topic::ReadFromFile(std::string filename)
     return IsInitialized();
 }
 
-void Topic::Print(int n_start, int n_items, std::string field_separator)
+void Topic::Print(int n_start, int n_messages, std::string field_separator)
 {
     if (n_start < 0) return;
 
-    if (n_items < 0) 
-        n_items = DataItems.size();
+    if (n_messages < 0) 
+        n_messages = Messages.size();
 
     PrintHeader(field_separator);
 
-    for (int i = n_start; (i < n_start + n_items) && (i < DataItems.size()); ++i)
+    for (int i = n_start; (i < n_start + n_messages) && (i < Messages.size()); ++i)
         std::cout << field_separator << std::setw(hdr_ind.length()) << i << field_separator << 
-            DataItems[i].ToString(len_seqid, len_secs, len_nsecs, len_frameid, len_fields, field_separator) 
+            Messages[i].ToString(len_seqid, len_secs, len_nsecs, len_frameid, len_fields, field_separator) 
             << field_separator << std::endl;
 }
 
 void Topic::PrintHeader(std::string field_separator)
 {
-    // Ignore if there are no data items
-    if (DataItems.size() == 0) return;
+    // Ignore if there are no messages in the topic
+    if (Messages.size() == 0) return;
 
     // Measure the length for the datetime string
-    int len_datetime = DataItems[0].DateTime.ToString().length();
+    int len_datetime = Messages[0].DateTime.ToString().length();
 
     // Measure the total line length
     int total_len = hdr_ind.length() + len_datetime + len_seqid + len_secs + len_nsecs + len_frameid;
-    for (int i = 0; i < FieldLabel.size(); ++i)
+    for (int i = 0; i < FieldLabels.size(); ++i)
         total_len += len_fields[i];
-    total_len += (7 + FieldLabel.size()) * field_separator.length();
+    total_len += (7 + FieldLabels.size()) * field_separator.length();
 
     // Print the index, time and the Header object
     std::cout << field_separator << hdr_ind << field_separator << std::setw(len_datetime) << hdr_datetime <<
@@ -170,8 +170,8 @@ void Topic::PrintHeader(std::string field_separator)
             hdr_nsecs << field_separator << std::setw(len_frameid) << hdr_frid;
 
     // Print the rest of the field labels
-    for (int i = 0; i < FieldLabel.size(); ++i)
-        std::cout << field_separator << std::setw(len_fields[i]) << FieldLabel[i];
+    for (int i = 0; i < FieldLabels.size(); ++i)
+        std::cout << field_separator << std::setw(len_fields[i]) << FieldLabels[i];
 
     // Finish the line
     std::cout << field_separator << std::endl;
@@ -187,13 +187,29 @@ bool Topic::IsInitialized()
     return is_initialized;
 }
 
-DataItem Topic::TokensToItem(const VecString &tokens)
+// Clear the entire topic object
+void Topic::Clear()
+{
+    Name = "";
+    FileName = "";
+    FieldLabels.clear();
+    Messages.clear();
+    is_initialized = false;
+    len_seqid = 0; 
+    len_secs = 0;
+    len_nsecs = 0;
+    len_frameid = 0;
+    len_fields.clear();
+    orig_field_labels.clear();
+}
+
+Message Topic::TokensToMessage(const VecString &tokens)
 {
     int l_seq = 0, l_secs = 0, l_nsecs = 0, l_frid = 0;
     std::vector<int> l_fields;
 
-    // Convert the tokens to a data item
-    DataItem item = DataItem::TokensToItem(tokens, orig_field_labels, l_seq, l_secs, l_nsecs, l_frid, l_fields);
+    // Convert the tokens to a message
+    Message msg = Message::TokensToMessage(tokens, orig_field_labels, l_seq, l_secs, l_nsecs, l_frid, l_fields);
     len_seqid = std::max(len_seqid, l_seq);
     len_secs = std::max(len_secs, l_secs);
     len_nsecs = std::max(len_nsecs, l_nsecs);
@@ -206,7 +222,7 @@ DataItem Topic::TokensToItem(const VecString &tokens)
             len_fields[i] = std::max(len_fields[i], l_fields[i]);
     }
 
-    return item;
+    return msg;
 }
 
 void Topic::ProcessHeader()
@@ -224,9 +240,9 @@ void Topic::ProcessHeader()
 
         // Remove the starting '.' if the label starts with it
         if (orig_field_labels[i][0] == '.')
-            FieldLabel.push_back(orig_field_labels[i].substr(1));
+            FieldLabels.push_back(orig_field_labels[i].substr(1));
         else
-            FieldLabel.push_back(orig_field_labels[i]);
+            FieldLabels.push_back(orig_field_labels[i]);
     }
 
     // Update the minimum spaces needed for printing each field
@@ -234,8 +250,8 @@ void Topic::ProcessHeader()
     len_secs = std::max(len_secs, (int)hdr_secs.length());
     len_nsecs = std::max(len_nsecs, (int)hdr_nsecs.length());
     len_frameid = std::max(len_frameid, (int)hdr_frid.length());
-    for (int i = 0; i < FieldLabel.size(); ++i)
-        len_fields[i] = std::max(len_fields[i], (int)FieldLabel[i].length());
+    for (int i = 0; i < FieldLabels.size(); ++i)
+        len_fields[i] = std::max(len_fields[i], (int)FieldLabels[i].length());
 }
 
 }

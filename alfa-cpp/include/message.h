@@ -1,5 +1,5 @@
 /*  ***************************************************************************
-*   data_item.h - Header for working with data items in ALFA dataset topics.
+*   message.h - Header for working with data items (messages) in ALFA topics.
 *   
 *   For more information about the dataset, please refer to:
 *   http://theairlab.org/alfa-dataset
@@ -16,8 +16,8 @@
 *   Last Modified: April 07, 2019
 *   ***************************************************************************/
 
-#ifndef ALFA_DATAITEM_H
-#define ALFA_DATAITEM_H
+#ifndef ALFA_MESSAGE_H
+#define ALFA_MESSAGE_H
 
 #include <string>
 #include <vector>
@@ -29,7 +29,7 @@ namespace alfa
 {
 
 // This class keeps the information of a single message (data item) in a topic
-class DataItem
+class Message
 {
 public:
 
@@ -43,20 +43,20 @@ public:
     
     // Data Members
     alfa::DateTime DateTime;    // Recorded Timestamp
-    HeaderType Header;          // Message header
-    VecString Fields;           // Message fields
+    HeaderType Header;          // Message Header
+    VecString Fields;           // Message Fields
 
     // Member Functions
     std::string ToString(std::string separator = " | ") const;
     std::string ToString(int l_seq, int l_secs, int l_nsecs, int l_frid, std::vector<int> l_fields, std::string separator = " | ") const;
-    bool operator< (const DataItem &it) const;
-    static DataItem TokensToItem(const VecString &tokens, const VecString &field_labels);
-    static DataItem TokensToItem(const VecString &tokens, const VecString &field_labels, int &out_len_seqid,
+    bool operator< (const Message &it) const;
+    static Message TokensToMessage(const VecString &tokens, const VecString &field_labels);
+    static Message TokensToMessage(const VecString &tokens, const VecString &field_labels, int &out_len_seqid,
             int &out_len_secs, int &out_len_nsecs, int &out_len_frameid, std::vector<int> &out_len_fields);
 };
 
-// Overload the << operator for DataItem
-std::ostream& operator<< (std::ostream& os, const DataItem& it)
+// Overload the << operator for Message
+std::ostream& operator<< (std::ostream& os, const Message& it)
 {
     // Write to the stream using the default values for field sizes
     os << it.ToString();
@@ -67,14 +67,14 @@ std::ostream& operator<< (std::ostream& os, const DataItem& it)
 /************************** Function Definitions ******************************/
 /******************************************************************************/
 
-// Convert DataItem to string, using the default values for fiels sizes
-std::string DataItem::ToString(std::string separator) const
+// Convert Message to string, using the default values for fiels sizes
+std::string Message::ToString(std::string separator) const
 {
     return ToString(5, 10, 9, 0, std::vector<int>(Fields.size()));
 }
 
-// Convert DataItem to string, given the minimum spacing for each field member
-std::string DataItem::ToString(int l_seq, int l_secs, int l_nsecs, int l_frid, 
+// Convert Message to string, given the minimum spacing for each field member
+std::string Message::ToString(int l_seq, int l_secs, int l_nsecs, int l_frid, 
         std::vector<int> l_fields, std::string separator) const
 {
     // Create an output string stream
@@ -95,26 +95,26 @@ std::string DataItem::ToString(int l_seq, int l_secs, int l_nsecs, int l_frid,
     return oss.str();
 }
 
-// Overload the < operator for DataItem
-bool DataItem::operator< (const DataItem &it) const
+// Overload the < operator for Message
+bool Message::operator< (const Message &it) const
 {
-    // Compare only using the recorded time of the items
+    // Compare only using the recorded time of the messages
     return (this->DateTime < it.DateTime);
 }
 
-// Convert a token collection to DataItem object
-DataItem DataItem::TokensToItem(const VecString &tokens, const VecString &field_labels)
+// Convert a token collection to Message object
+Message Message::TokensToMessage(const VecString &tokens, const VecString &field_labels)
 {
     int len_seqid = 0, len_secs = 0, len_nsecs = 0, len_frameid = 0;
     std::vector<int> len_fields;
-    return TokensToItem(tokens, field_labels, len_seqid, len_secs, len_nsecs, len_frameid, len_fields);
+    return TokensToMessage(tokens, field_labels, len_seqid, len_secs, len_nsecs, len_frameid, len_fields);
 }
 
-// Convert a token collection to DataItem object and output the string sizes of the fields
-DataItem DataItem::TokensToItem(const VecString &tokens, const VecString &field_labels, int &out_len_seqid, 
+// Convert a token collection to Message object and output the string sizes of the fields
+Message Message::TokensToMessage(const VecString &tokens, const VecString &field_labels, int &out_len_seqid, 
             int &out_len_secs, int &out_len_nsecs, int &out_len_frameid, std::vector<int> &out_len_fields)
 {
-    DataItem item;
+    Message msg;
     out_len_seqid = 0; out_len_secs = 0; out_len_nsecs = 0; out_len_frameid = 0;
     out_len_fields.clear();
 
@@ -122,34 +122,34 @@ DataItem DataItem::TokensToItem(const VecString &tokens, const VecString &field_
     for (int i = 0; i < field_labels.size(); ++i)
     {
         if (field_labels[i].compare("time") == 0)                       // If it is timestamp
-            item.DateTime = DateTime::StringToTime(tokens[i], Commons::CSVDateTimeFormat);
+            msg.DateTime = DateTime::StringToTime(tokens[i], Commons::CSVDateTimeFormat);
         else if (field_labels[i].compare(".header.seq") == 0)           // If it is sequence id
         {
-            Commons::StringToInt(tokens[i], item.Header.SequenceID);
+            Commons::StringToInt(tokens[i], msg.Header.SequenceID);
             out_len_seqid = tokens[i].length();
         }
         else if (field_labels[i].compare(".header.stamp.secs") == 0)    // If it is header seconds
         {
-            Commons::StringToInt(tokens[i], item.Header.TimeStamp.Secs);
+            Commons::StringToInt(tokens[i], msg.Header.TimeStamp.Secs);
             out_len_secs = tokens[i].length();
         }
         else if (field_labels[i].compare(".header.stamp.nsecs") == 0)   // If it is header nanoseconds
         {
-            Commons::StringToInt(tokens[i], item.Header.TimeStamp.NanoSecs);
+            Commons::StringToInt(tokens[i], msg.Header.TimeStamp.NanoSecs);
             out_len_nsecs = tokens[i].length();
         }
         else if (field_labels[i].compare(".header.frame_id") == 0)      // If it is frame id
         {
-            item.Header.FrameID = tokens[i];
+            msg.Header.FrameID = tokens[i];
             out_len_frameid = tokens[i].length();
         }
         else                                                            // If it is any other field
         {
-            item.Fields.push_back(tokens[i]);
+            msg.Fields.push_back(tokens[i]);
             out_len_fields.push_back(tokens[i].length());
         }
     }
-    return item;
+    return msg;
 }
 
 }
