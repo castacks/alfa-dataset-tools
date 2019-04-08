@@ -54,12 +54,14 @@ public:
     void Clear();
 
 private:
-    // Data Members
-    bool is_initialized = false;
-
     // Member Functions
     Message TokensToMessage(const VecString &tokens);
     void ProcessHeader();
+
+    // Data Members
+
+    // Is the topic initialized or not
+    bool is_initialized = false;
 
     // Maximum length of the data fields (for better printing)
     int len_seqid = 0, len_secs = 0, len_nsecs = 0, len_frameid = 0;
