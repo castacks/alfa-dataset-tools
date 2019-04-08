@@ -25,7 +25,6 @@
 #include <fstream>
 #include <cstdio>
 #include <iomanip>
-#include <ctime>
 #include <algorithm>
 #include "commons.h"
 #include "message.h"
@@ -39,18 +38,18 @@ class Topic
 public:
 
     // Class Data Members
-    std::string Name;
+    std::string Name = "N/A";
     std::string FileName;
     VecString FieldLabels;
     std::vector<Message> Messages;
 
     // Constructors & Deconstructors
-    Topic(std::string filename = "");
+    Topic(std::string filename = "", std::string topic_name = "N/A");
 
     // Member Functions
     bool ReadFromFile(std::string filename);
-    void Print(int n_start = 0, int n_messages = -1, std::string field_separator = " | ");
-    void PrintHeader(std::string field_separator = " | ");
+    int Print(int n_start = 0, int n_messages = -1, std::string field_separator = " | ");
+    int PrintHeader(std::string field_separator = " | ");
     bool IsInitialized();
     void Clear();
 
@@ -78,22 +77,35 @@ private:
 /************************** Function Definitions ******************************/
 /******************************************************************************/
 
-Topic::Topic(std::string filename)
+// Contructor function for Topic. Loads a CSV file containing an ALFA dataset topic.
+Topic::Topic(std::string filename, std::string topic_name)
 {
+    // Assign the given topic name
+    Name = topic_name;
+
+    // Read the given CSV file
     if (filename.compare("") != 0)
         ReadFromFile(filename);
 }
 
+// Load a CSV file containing an ALFA dataset topic.
 bool Topic::ReadFromFile(std::string filename)
 {
-    this->FileName = filename;
+    // Keep the topic name
+    std::string topic_name = Name;
 
     // Clear the previous data from the object
     this->Clear();
 
-    // Open the file
+    // Save the filename and topic name
+    this->FileName = filename;
+    this->Name = topic_name;
+
+    // Open the CSV file
     std::ifstream ifs (filename);
-    if (!ifs.is_open()) 
+
+    // Print an error if file did not open properly
+    if (!ifs.is_open())
     {
         std::cerr << "Failed to open '" << filename << "' file." << std::endl;
         return false;
@@ -102,10 +114,8 @@ bool Topic::ReadFromFile(std::string filename)
     // Read the header line from the CSV file
     std::string line;
     if (std::getline(ifs, line))
-    {
         this->orig_field_labels = Commons::Tokenize(line, Commons::CSVDelimiter);
-    }
-    else
+    else // Print an error if the file is not formatted properly
     {
         std::cerr << "Error reading the header from '" << filename << "' file." << std::endl;
         return false;
@@ -116,12 +126,18 @@ bool Topic::ReadFromFile(std::string filename)
     while (std::getline(ifs, line))
     {
         line_number++;
+
+        // Break the line to tokens
         auto tokens = Commons::Tokenize(line, Commons::CSVDelimiter);
+
+        // Print an error if file is not formatted properly
         if (tokens.size() != this->orig_field_labels.size())
         {
             std::cerr << "Error converting line #" << line_number << " of '" << filename << "'." << std::endl;
             continue;
         }
+
+        // Convert the tokens to a message and add to our collection
         this->Messages.push_back(TokensToMessage(tokens));
     }
 
@@ -134,25 +150,44 @@ bool Topic::ReadFromFile(std::string filename)
     return IsInitialized();
 }
 
-void Topic::Print(int n_start, int n_messages, std::string field_separator)
+// Print a specified number of messages. Also prints the header first. 
+// Returns the number of messages printed.
+int Topic::Print(int n_start, int n_messages, std::string field_separator)
 {
-    if (n_start < 0) return;
+    // Return if the start index is negative
+    if (n_start < 0) return 0;
 
-    if (n_messages < 0) 
+    // If the number of messages is negative, print all the messages
+    if (n_messages < 0)
         n_messages = Messages.size();
 
-    PrintHeader(field_separator);
+    // Print the header first. Puts separators between each two fields.
+    int header_length = PrintHeader(field_separator);
 
+    // Print a line to separate labels from the data
+    std::cout << std::string(header_length, '-') << std::endl;
+
+
+    // Print all the messages. Puts separators between each two fields.
+    int printed_messages = 0;
     for (int i = n_start; (i < n_start + n_messages) && (i < Messages.size()); ++i)
+    {
         std::cout << field_separator << std::setw(hdr_ind.length()) << i << field_separator << 
             Messages[i].ToString(len_seqid, len_secs, len_nsecs, len_frameid, len_fields, field_separator) 
             << field_separator << std::endl;
+        printed_messages++;
+    }
+
+    // Print the number of printed messages
+    return printed_messages;
 }
 
-void Topic::PrintHeader(std::string field_separator)
+// Print the topic header (message field labels).
+// Returns the length of the header line printed.
+int Topic::PrintHeader(std::string field_separator)
 {
     // Ignore if there are no messages in the topic
-    if (Messages.size() == 0) return;
+    if (Messages.size() == 0) return 0;
 
     // Measure the length for the datetime string
     int len_datetime = Messages[0].DateTime.ToString().length();
@@ -176,12 +211,11 @@ void Topic::PrintHeader(std::string field_separator)
     // Finish the line
     std::cout << field_separator << std::endl;
 
-    // Print a line to separate labels from the data
-    for (int i = 0; i < total_len; ++i)
-        std::cout << '-';
-    std::cout << std::endl;
+    // Return the line length
+    return total_len;
 }
 
+// Returns the initialization status
 bool Topic::IsInitialized()
 {
     return is_initialized;
@@ -203,13 +237,17 @@ void Topic::Clear()
     orig_field_labels.clear();
 }
 
+// Convert a vector of tokens to a message
 Message Topic::TokensToMessage(const VecString &tokens)
 {
+    // Define temporary variables for header field lengths
     int l_seq = 0, l_secs = 0, l_nsecs = 0, l_frid = 0;
     std::vector<int> l_fields;
 
     // Convert the tokens to a message
     Message msg = Message::TokensToMessage(tokens, orig_field_labels, l_seq, l_secs, l_nsecs, l_frid, l_fields);
+
+    // Update the field lengths in the messages
     len_seqid = std::max(len_seqid, l_seq);
     len_secs = std::max(len_secs, l_secs);
     len_nsecs = std::max(len_nsecs, l_nsecs);
@@ -222,9 +260,11 @@ Message Topic::TokensToMessage(const VecString &tokens)
             len_fields[i] = std::max(len_fields[i], l_fields[i]);
     }
 
+    // Return the new message
     return msg;
 }
 
+// Postprocess the header of the CSV file (remove time, etc. from labels).
 void Topic::ProcessHeader()
 {
     // Iterate through all the column labels read from file
