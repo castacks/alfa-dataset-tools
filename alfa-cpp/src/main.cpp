@@ -21,26 +21,24 @@
 #include <iostream>
 #include <string>
 
-const char PathSeparator = 
-#if defined _WIN32 || defined __CYGWIN__
-    '\\';
-#else
-    '/';
-#endif
-
-std::string ParseCommandLine(int argc, char** argv);
+bool ParseCommandLine(int argc, char** argv, std::string &out_sequence_path, std::string &out_sequence_name);
 
 int main(int argc, char** argv)
 {
     // Read the dataset name/path from command-line arguments
-    std::string sequenceName;
-    sequenceName = ParseCommandLine(argc, argv);
+    std::string sequenceDir, sequenceName;
+    bool parsed = ParseCommandLine(argc, argv, sequenceDir, sequenceName);
+    
+    // Exit if the command line is not properly formatted
+    if (!parsed) return 0;
 
-    // Exit if the sequence name is not read correctly
-    if (sequenceName.empty()) return 0;
+    std::vector<std::string> FileList = alfa::Commons::GetFileList(sequenceDir);
+    FileList = alfa::Commons::FilterFileList(FileList, "csv", true);
+    for (int i = 0; i < FileList.size(); ++i)
+        std::cout << FileList[i] << std::endl;
 
     // Read the data from the given directory 
-    alfa::Topic topic(sequenceName);
+    alfa::Topic topic(sequenceDir + sequenceName);
 
     // Print the first 10 data items
     topic.Print(0, 10);
@@ -49,7 +47,7 @@ int main(int argc, char** argv)
 }
 
 // Parse command-line arguments
-std::string ParseCommandLine(int argc, char** argv) 
+bool ParseCommandLine(int argc, char** argv, std::string &out_sequence_path, std::string &out_sequence_name) 
 {
     if ((argc != 3) || (argv[argc-1] == NULL) || (argv[argc-1][0] == '-') ) 
     {
@@ -59,16 +57,16 @@ std::string ParseCommandLine(int argc, char** argv)
         std::cout << "./main path/to/sequence/folder sequence_name" << std::endl;
         std::cout << "Usage (in Windows):" << std::endl;
         std::cout << "main.exe path\\to\\sequence\\folder sequence_name" << std::endl;
-        return "";
+        return false;
     }
 
     // Extract the path and the sequence name
-    std::string path = std::string(argv[1]);
-    std::string sequenceName = std::string(argv[2]);
+    out_sequence_path = std::string(argv[1]);
+    out_sequence_name = std::string(argv[2]);
 
     // Add the path separator to the path
-    if (path[path.length() - 1] != PathSeparator) 
-        path += PathSeparator;
+    if (out_sequence_path[out_sequence_path.length() - 1] != alfa::PathSeparator) 
+        out_sequence_path += alfa::PathSeparator;
 
-    return path + sequenceName;
+    return true;
 }

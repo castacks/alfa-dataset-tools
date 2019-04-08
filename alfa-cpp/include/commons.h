@@ -27,6 +27,14 @@
 #include <ctime>
 #include <cstdlib>
 
+// Define different headers for Windows and Unix-based systems
+#if defined _WIN32 || defined __CYGWIN__
+    #include <windows.h>
+#else
+    #include <dirent.h>
+#endif
+
+
 namespace alfa
 {
 
@@ -42,8 +50,10 @@ public:
     static const std::string CSVDateTimeFormat;
 
     // Member Functions
-    static std::vector<std::string> Tokenize(const std::string input, const char delim);
-    static bool StringToInt(std::string str, int &out_number);
+    static std::vector<std::string> Tokenize(const std::string &input, const char delim);
+    static bool StringToInt(const std::string &str, int &out_number);
+    static VecString GetFileList(const std::string &dir_path);
+    static VecString FilterFileList(const VecString &file_list, const std::string &extension, bool remove_extension = false);
 };
 
 /******************************************************************************/
@@ -66,7 +76,7 @@ const std::string Commons::CSVDateTimeFormat = "%d/%d/%d/%d:%d:%d.%d";
 
 
 // Break a string into smaller tokens using a delimiter
-std::vector<std::string> Commons::Tokenize(const std::string input, const char delim)
+std::vector<std::string> Commons::Tokenize(const std::string &input, const char delim)
 {
     // Vector of string to save tokens 
     std::vector<std::string> tokens;
@@ -83,7 +93,7 @@ std::vector<std::string> Commons::Tokenize(const std::string input, const char d
 }
 
 // Convert a string to an integer type. Returns false if the string is not exactly an integer.
-bool Commons::StringToInt(std::string str, int &out_number)
+bool Commons::StringToInt(const std::string &str, int &out_number)
 {
     char *endptr;
     long value = std::strtol(str.c_str(), &endptr, 10);
@@ -95,6 +105,61 @@ bool Commons::StringToInt(std::string str, int &out_number)
     // Otherwise, convert to integer
     out_number = (int)value;
     return true;
+}
+
+// Get the list of files in a given directory path
+VecString Commons::GetFileList(const std::string &dir_path)
+{
+    VecString file_list;
+
+    // Treat Windows and Unix differently
+    #if defined _WIN32 || defined __CYGWIN__    // Windows implementation to obtain the list of files
+        std::string pattern(dir_path);
+        pattern.append("\\*");
+        WIN32_FIND_DATA data;
+        HANDLE hFind;
+        if ((hFind = FindFirstFile(pattern.c_str(), &data)) != INVALID_HANDLE_VALUE) 
+        {
+            do { file_list.push_back(data.cFileName); } 
+            while (FindNextFile(hFind, &data) != 0);
+            FindClose(hFind);
+        }
+    #else                                       // POSIX implementation to obtain the list of files
+
+        // Open the directory file
+        DIR* dirp = opendir(dir_path.c_str());
+        struct dirent * dp;
+
+        // Read all the filenames and add them to the vector
+        while ((dp = readdir(dirp)) != NULL)
+            file_list.push_back(dp->d_name);
+        
+        // Close the directory file
+        closedir(dirp);
+    #endif
+    return file_list;
+}
+
+// Return the list of files in the input list that have the desired extension
+VecString Commons::FilterFileList(const VecString &file_list, const std::string &extension, bool remove_extension)
+{
+    VecString filtered_list;
+    for (int i = 0; i < file_list.size(); ++i)
+    {
+        // Find the file extension position
+        int ext_pos = file_list[i].find_last_of(".");
+
+        // Check the extension
+        if (file_list[i].substr(ext_pos + 1) == extension)
+        {
+            // Remove the extension if desired
+            if (remove_extension)
+                filtered_list.push_back(file_list[i].substr(0, ext_pos));
+            else
+                filtered_list.push_back(file_list[i]);
+        }
+    }
+    return filtered_list;
 }
 
 /******************************************************************************/
