@@ -24,21 +24,32 @@
 #include <iostream>
 #include <cctype>
 #include <algorithm>
+#include <queue>
 #include "commons.h"
 #include "topic.h"
 
 namespace alfa
 {
 
-// This class keeps the information of a single topic in a dataset sequence
+// This class keeps the information of a dataset sequence
 class Sequence
 {
 public:
+
+    // Subclasses
+    class MessageIndex 
+    { 
+    public:
+        int TopicIdx; int MessageIdx; 
+        MessageIndex(int topic_idx = -1, int message_idx = -1)
+            : TopicIdx(topic_idx), MessageIdx(message_idx) {}
+    };
 
     // Class Data Members
     std::string Name = "N/A";
     std::string DirectoryPath;
     std::vector<Topic> Topics;
+    std::vector<MessageIndex> MessageList;
 
     // Constructors & Deconstructors
     Sequence(const std::string &sequence_dir = "", const std::string &sequence_name = "N/A");
@@ -48,16 +59,17 @@ public:
     //int Print(int n_start = 0, int n_messages = -1, std::string field_separator = " | ");
     //int PrintHeader(std::string field_separator = " | ");
     bool IsInitialized() const;
-    void Clear();
+    //void Clear();
 
 private:
     // Data Members
     bool is_initialized = false;
 
     // Member Functions
-    void MergeTopics();
     std::string ExtractTopicName(const std::string &topic_filename);
     bool ExtractTopicNames(VecString &out_topic_files, VecString &out_topic_names);
+    void CreateMessageList();
+    bool CompareMessageIndices(MessageIndex msg1, MessageIndex msg2);
 };
 
 /******************************************************************************/
@@ -95,6 +107,9 @@ bool Sequence::LoadSequence(const std::string &sequence_dir, const std::string &
         std::string topic_full_filename = sequence_dir + topic_file_list[i] + "." + Commons::CSVFileExtension;
         Topics.push_back(Topic(topic_full_filename, topic_list[i]));
     }
+
+    // Create the sorted message list of all the topics
+    CreateMessageList();
 
     // Initialization done
     is_initialized = true;
@@ -164,6 +179,44 @@ bool Sequence::ExtractTopicNames(VecString &out_topic_files, VecString &out_topi
     return true;
 }
 
+// Merge all the messages in all the topics into MessageList sorted by their recorded time
+// Can be implemented more efficiently using merge sort
+void Sequence::CreateMessageList()
+{
+    // Define a typedef for simplicity
+    typedef std::pair<Message, int> KeyValuePair;
+
+    // Initialize the list of the indices of current messages in the topic
+    std::vector<int> curr_index(Topics.size(), 0);
+
+    // Initialize the min heap using the first message of the topics
+    std::priority_queue<KeyValuePair, std::vector<KeyValuePair>, std::greater<KeyValuePair> > min_heap;
+    for (int i = 0; i < static_cast<int>(Topics.size()); ++i)
+        if (!Topics[i].Messages.empty())
+            min_heap.push(KeyValuePair(Topics[i].Messages[0], i));
+
+    // Perform a process similar to merge sort of already sorted lists
+    while (!min_heap.empty())
+    {
+        // Add the smallest message to the list
+        int t_idx = min_heap.top().second;
+        MessageList.push_back(MessageIndex(t_idx, curr_index[t_idx]));
+        
+        // Remove the message from the heap
+        min_heap.pop();
+
+        // Add the new message from the topic
+        ++curr_index[t_idx];
+        if (curr_index[t_idx] < static_cast<int>(Topics[t_idx].Messages.size()))
+            min_heap.push(KeyValuePair(Topics[t_idx].Messages[curr_index[t_idx]], t_idx));
+    }
+}
+
+// Compare two message indices based on their actual message times, etc.
+bool Sequence::CompareMessageIndices(MessageIndex msg1, MessageIndex msg2)
+{
+    return (Topics[msg1.TopicIdx].Messages[msg1.MessageIdx] < Topics[msg2.TopicIdx].Messages[msg2.MessageIdx]);
+} 
 
 }
 #endif
