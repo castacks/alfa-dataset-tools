@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 07, 2019
+*   Last Modified: April 09, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_MESSAGE_H
@@ -49,17 +49,20 @@ public:
     // Member Functions
     std::string ToString(std::string separator = " | ") const;
     std::string ToString(int l_seq, int l_secs, int l_nsecs, int l_frid, std::vector<int> l_fields, std::string separator = " | ") const;
-    bool operator< (const Message &it) const;
+    bool operator< (const Message &msg) const;
+    bool operator> (const Message &msg) const;
+    bool operator== (const Message &msg) const;
+    bool operator!= (const Message &msg) const;
     static Message TokensToMessage(const VecString &tokens, const VecString &field_labels);
     static Message TokensToMessage(const VecString &tokens, const VecString &field_labels, int &out_len_seqid,
             int &out_len_secs, int &out_len_nsecs, int &out_len_frameid, std::vector<int> &out_len_fields);
 };
 
 // Overload the << operator for Message
-std::ostream& operator<< (std::ostream& os, const Message& it)
+std::ostream& operator<< (std::ostream& os, const Message& msg)
 {
     // Write to the stream using the default values for field sizes
-    os << it.ToString();
+    os << msg.ToString();
     return os;
 }
 
@@ -96,10 +99,66 @@ std::string Message::ToString(int l_seq, int l_secs, int l_nsecs, int l_frid,
 }
 
 // Overload the < operator for Message
-bool Message::operator< (const Message &it) const
+bool Message::operator< (const Message &msg) const
 {
-    // Compare only using the recorded time of the messages
-    return (this->DateTime < it.DateTime);
+    // Compare the recorded time of the messages
+    if (this->DateTime < msg.DateTime) return true;
+    if (this->DateTime > msg.DateTime) return false;
+    
+    // Compare the sequence id of the messages
+    if (this->Header.SequenceID < msg.Header.SequenceID) return true;
+    if (this->Header.SequenceID > msg.Header.SequenceID) return false;
+
+    // Compare the seconds of the header
+    if (this->Header.TimeStamp.Secs < msg.Header.TimeStamp.Secs) return true;
+    if (this->Header.TimeStamp.Secs > msg.Header.TimeStamp.Secs) return false;
+
+    // Compare the nanoseconds of the header
+    if (this->Header.TimeStamp.NanoSecs < msg.Header.TimeStamp.NanoSecs) return true;
+    if (this->Header.TimeStamp.NanoSecs > msg.Header.TimeStamp.NanoSecs) return false;
+
+    // Compare the other fields
+    for (int i = 0; i < static_cast<int>(std::min(this->Fields.size(), msg.Fields.size())); ++i)
+    {
+        if (this->Fields[i] < msg.Fields[i]) return true;
+        if (this->Fields[i] > msg.Fields[i]) return false;
+    }
+
+    // See if they have the same number of fields
+    if (this->Fields.size() < msg.Fields.size())
+        return true;
+    
+    return false;
+}
+
+// Overload the > operator for Message
+bool Message::operator> (const Message &msg) const
+{
+    return (msg < *this);
+}
+
+// Overload the == operator for Message
+bool Message::operator== (const Message &msg) const
+{
+    if (this->DateTime != msg.DateTime) return false;
+    if (this->Header.SequenceID != msg.Header.SequenceID) return false;
+    if (this->Header.TimeStamp.Secs != msg.Header.TimeStamp.Secs) return false;
+    if (this->Header.TimeStamp.NanoSecs != msg.Header.TimeStamp.NanoSecs) return false;
+
+    // See if they have the same number of fields
+    if (this->Fields.size() != msg.Fields.size()) return false;
+
+    // Compare the fields
+    for (int i = 0; i < static_cast<int>(this->Fields.size()); ++i)
+        if (this->Fields[i] != msg.Fields[i]) return false;
+
+    return true;
+}
+
+// Overload the != operator for Message
+bool Message::operator!= (const Message &msg) const
+{
+    return !(msg == *this);
 }
 
 // Convert a token collection to Message object

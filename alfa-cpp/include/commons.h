@@ -188,6 +188,9 @@ public:
 
     // Member Functions
     bool operator< (const DateTime &dt) const;
+    bool operator> (const DateTime &dt) const;
+    bool operator== (const DateTime &dt) const;
+    bool operator!= (const DateTime &dt) const;
     static DateTime StringToTime(const std::string &strdatetime, const std::string &format);
     std::string ToString() const;
 };
@@ -226,6 +229,31 @@ bool DateTime::operator< (const DateTime &dt) const
 
     if (Microsecond < dt.Microsecond) return true;
     return false;
+}
+
+// Overload the > operator for DateTime
+bool DateTime::operator> (const DateTime &dt) const
+{
+    return (dt < *this);
+}
+
+// Overload the == operator for DateTime
+bool DateTime::operator== (const DateTime &dt) const
+{
+    if (Year != dt.Year) return false;
+    if (Month != dt.Month) return false;
+    if (Day != dt.Day) return false;
+    if (Hour != dt.Hour) return false;
+    if (Minute != dt.Minute) return false;
+    if (Second != dt.Second) return false;
+    if (Microsecond != dt.Microsecond) return false;
+    return true;
+}
+
+// Overload the != operator for DateTime
+bool DateTime::operator!= (const DateTime &dt) const
+{
+    return !(dt == *this);
 }
 
 // Convert a given string to a DateTime object given the specified format
