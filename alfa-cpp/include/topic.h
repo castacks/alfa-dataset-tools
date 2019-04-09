@@ -297,7 +297,10 @@ void Topic::ProcessHeader()
     len_nsecs = std::max(len_nsecs, (int)hdr_nsecs.length());
     len_frameid = std::max(len_frameid, (int)hdr_frid.length());
     for (int i = 0; i < FieldLabels.size(); ++i)
+    {
+        if (len_fields.size() < i + 1) break;
         len_fields[i] = std::max(len_fields[i], (int)FieldLabels[i].length());
+    }
 }
 
 }

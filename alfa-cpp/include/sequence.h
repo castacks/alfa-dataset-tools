@@ -23,6 +23,7 @@
 #include <vector>
 #include <iostream>
 #include <cctype>
+#include <algorithm>
 #include "commons.h"
 #include "topic.h"
 
@@ -87,9 +88,17 @@ bool Sequence::LoadSequence(const std::string &sequence_dir, const std::string &
         return false;
     }
 
-    
+    // Load all the topics
+    for (int i = 0; i < topic_list.size(); ++i)
+    {
+        std::cout << "Loading topic: " << topic_list[i] << std::endl;
+        std::string topic_full_filename = sequence_dir + topic_file_list[i] + "." + Commons::CSVFileExtension;
+        Topics.push_back(Topic(topic_full_filename, topic_list[i]));
+    }
 
+    // Initialization done
     is_initialized = true;
+
     return IsInitialized();
 }
 
@@ -134,6 +143,9 @@ bool Sequence::ExtractTopicNames(VecString &out_topic_files, VecString &out_topi
 
     // Extract the list of all the CSV files in the directory
     VecString dir_file_list = Commons::FilterFileList(Commons::GetFileList(DirectoryPath), Commons::CSVFileExtension, true);
+
+    // Sort the file list alphabetically
+    std::sort(dir_file_list.begin(), dir_file_list.end());
 
     // Extract the topic names from their file names
     for (int i = 0; i < dir_file_list.size(); ++i)
