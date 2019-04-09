@@ -88,7 +88,7 @@ std::string Message::ToString(int l_seq, int l_secs, int l_nsecs, int l_frid,
         std::setw(l_frid) << Header.FrameID;
 
     // Write the fields in the string stream
-    for (int i = 0; i < Fields.size(); ++i)
+    for (int i = 0; i < static_cast<int>(Fields.size()); ++i)
         oss << separator << std::setw(l_fields[i]) << Fields[i];
     
     // Convert the string stream to a string and return
@@ -119,7 +119,7 @@ Message Message::TokensToMessage(const VecString &tokens, const VecString &field
     out_len_fields.clear();
 
     // Check the type of the current token (time, header, etc.)
-    for (int i = 0; i < field_labels.size(); ++i)
+    for (int i = 0; i < static_cast<int>(field_labels.size()); ++i)
     {
         if (field_labels[i].compare("time") == 0)                       // If it is timestamp
             msg.DateTime = DateTime::StringToTime(tokens[i], Commons::CSVDateTimeFormat);

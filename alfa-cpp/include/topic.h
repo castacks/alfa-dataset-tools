@@ -172,7 +172,7 @@ int Topic::Print(int n_start, int n_messages, const std::string &field_separator
 
     // Print all the messages. Puts separators between each two fields.
     int printed_messages = 0;
-    for (int i = n_start; (i < n_start + n_messages) && (i < Messages.size()); ++i)
+    for (int i = n_start; (i < n_start + n_messages) && (i < static_cast<int>(Messages.size())); ++i)
     {
         std::cout << field_separator << std::setw(hdr_ind.length()) << i << field_separator << 
             Messages[i].ToString(len_seqid, len_secs, len_nsecs, len_frameid, len_fields, field_separator) 
@@ -196,7 +196,7 @@ int Topic::PrintHeader(const std::string &field_separator) const
 
     // Measure the total line length
     int total_len = hdr_ind.length() + len_datetime + len_seqid + len_secs + len_nsecs + len_frameid;
-    for (int i = 0; i < FieldLabels.size(); ++i)
+    for (int i = 0; i < static_cast<int>(FieldLabels.size()); ++i)
         total_len += len_fields[i];
     total_len += (7 + FieldLabels.size()) * field_separator.length();
 
@@ -207,7 +207,7 @@ int Topic::PrintHeader(const std::string &field_separator) const
             hdr_nsecs << field_separator << std::setw(len_frameid) << hdr_frid;
 
     // Print the rest of the field labels
-    for (int i = 0; i < FieldLabels.size(); ++i)
+    for (int i = 0; i < static_cast<int>(FieldLabels.size()); ++i)
         std::cout << field_separator << std::setw(len_fields[i]) << FieldLabels[i];
 
     // Finish the line
@@ -258,7 +258,7 @@ Message Topic::TokensToMessage(const VecString &tokens)
     len_secs = std::max(len_secs, l_secs);
     len_nsecs = std::max(len_nsecs, l_nsecs);
     len_frameid = std::max(len_frameid, l_frid);
-    for (int i = 0; i < l_fields.size(); ++i)
+    for (int i = 0; i < static_cast<int>(l_fields.size()); ++i)
     {
         if (i == len_fields.size())
             len_fields.push_back(l_fields[i]);
@@ -274,7 +274,7 @@ Message Topic::TokensToMessage(const VecString &tokens)
 void Topic::ProcessHeader()
 {
     // Iterate through all the column labels read from file
-    for (int i = 0; i < orig_field_labels.size(); ++i)
+    for (int i = 0; i < static_cast<int>(orig_field_labels.size()); ++i)
     {
         // Ignore if it is for the timestamp of the header class
         if (orig_field_labels[i].compare("time") == 0
@@ -296,9 +296,9 @@ void Topic::ProcessHeader()
     len_secs = std::max(len_secs, (int)hdr_secs.length());
     len_nsecs = std::max(len_nsecs, (int)hdr_nsecs.length());
     len_frameid = std::max(len_frameid, (int)hdr_frid.length());
-    for (int i = 0; i < FieldLabels.size(); ++i)
+    for (int i = 0; i < static_cast<int>(FieldLabels.size()); ++i)
     {
-        if (len_fields.size() < i + 1) break;
+        if (static_cast<int>(len_fields.size()) < i + 1) break;
         len_fields[i] = std::max(len_fields[i], (int)FieldLabels[i].length());
     }
 }

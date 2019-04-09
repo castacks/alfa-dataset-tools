@@ -30,7 +30,8 @@
 
 // Define different headers for Windows and Unix-based systems
 #if defined _WIN32 || defined __CYGWIN__
-    #include <windows.h>
+	#define NOMINMAX 
+	#include <windows.h>
 #else
     #include <dirent.h>
 #endif
@@ -149,7 +150,7 @@ VecString Commons::GetFileList(const std::string &dir_path)
 VecString Commons::FilterFileList(const VecString &file_list, const std::string &extension, const bool remove_extension)
 {
     VecString filtered_list;
-    for (int i = 0; i < file_list.size(); ++i)
+    for (int i = 0; i < static_cast<int>(file_list.size()); ++i)
     {
         // Find the file extension position
         int ext_pos = file_list[i].find_last_of(".");

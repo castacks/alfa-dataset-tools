@@ -89,7 +89,7 @@ bool Sequence::LoadSequence(const std::string &sequence_dir, const std::string &
     }
 
     // Load all the topics
-    for (int i = 0; i < topic_list.size(); ++i)
+    for (int i = 0; i < static_cast<int>(topic_list.size()); ++i)
     {
         std::cout << "Loading topic: " << topic_list[i] << std::endl;
         std::string topic_full_filename = sequence_dir + topic_file_list[i] + "." + Commons::CSVFileExtension;
@@ -148,7 +148,7 @@ bool Sequence::ExtractTopicNames(VecString &out_topic_files, VecString &out_topi
     std::sort(dir_file_list.begin(), dir_file_list.end());
 
     // Extract the topic names from their file names
-    for (int i = 0; i < dir_file_list.size(); ++i)
+    for (int i = 0; i < static_cast<int>(dir_file_list.size()); ++i)
     {
         std::string topic_name = ExtractTopicName(dir_file_list[i]);
         if (!topic_name.empty())
