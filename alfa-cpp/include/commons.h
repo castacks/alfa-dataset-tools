@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 07, 2019
+*   Last Modified: April 08, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_Commons_H
@@ -26,6 +26,7 @@
 #include <iomanip>
 #include <ctime>
 #include <cstdlib>
+#include <algorithm>
 
 // Define different headers for Windows and Unix-based systems
 #if defined _WIN32 || defined __CYGWIN__
@@ -46,6 +47,7 @@ class Commons
 public:
     // Data Members
     static const char CSVDelimiter;
+    static const std::string CSVFileExtension;
     static const char FilePathSeparator;
     static const std::string CSVDateTimeFormat;
 
@@ -53,7 +55,7 @@ public:
     static std::vector<std::string> Tokenize(const std::string &input, const char delim);
     static bool StringToInt(const std::string &str, int &out_number);
     static VecString GetFileList(const std::string &dir_path);
-    static VecString FilterFileList(const VecString &file_list, const std::string &extension, bool remove_extension = false);
+    static VecString FilterFileList(const VecString &file_list, const std::string &extension, const bool remove_extension = false);
 };
 
 /******************************************************************************/
@@ -62,6 +64,9 @@ public:
 
 // The delimiter used in the topic CSV files to separate the data fields
 const char Commons::CSVDelimiter = ',';
+
+// The extension for the CSV files (normally should be just 'csv')
+const std::string Commons::CSVFileExtension = "csv";
 
 // The OS-specific separator for the file paths
 const char PathSeparator = 
@@ -141,7 +146,7 @@ VecString Commons::GetFileList(const std::string &dir_path)
 }
 
 // Return the list of files in the input list that have the desired extension
-VecString Commons::FilterFileList(const VecString &file_list, const std::string &extension, bool remove_extension)
+VecString Commons::FilterFileList(const VecString &file_list, const std::string &extension, const bool remove_extension)
 {
     VecString filtered_list;
     for (int i = 0; i < file_list.size(); ++i)
@@ -149,7 +154,15 @@ VecString Commons::FilterFileList(const VecString &file_list, const std::string 
         // Find the file extension position
         int ext_pos = file_list[i].find_last_of(".");
 
-        // Check the extension
+        // Extract the file extension and convert to lower case
+        std::string file_ext = file_list[i].substr(ext_pos + 1);
+        std::transform(file_ext.begin(), file_ext.end(), file_ext.begin(), ::tolower);
+
+        // Convert the input extension to lower case
+        std::string lower_ext(extension);
+        std::transform(lower_ext.begin(), lower_ext.end(), lower_ext.begin(), ::tolower);
+
+        // Check the extension ignoring the cases
         if (file_list[i].substr(ext_pos + 1) == extension)
         {
             // Remove the extension if desired
@@ -174,7 +187,7 @@ public:
 
     // Member Functions
     bool operator< (const DateTime &dt) const;
-    static DateTime StringToTime(std::string strdatetime, std::string format);
+    static DateTime StringToTime(const std::string &strdatetime, const std::string &format);
     std::string ToString() const;
 };
 
@@ -215,7 +228,7 @@ bool DateTime::operator< (const DateTime &dt) const
 }
 
 // Convert a given string to a DateTime object given the specified format
-DateTime DateTime::StringToTime(std::string strdatetime, std::string format)
+DateTime DateTime::StringToTime(const std::string &strdatetime, const std::string &format)
 {
     DateTime dt;
     

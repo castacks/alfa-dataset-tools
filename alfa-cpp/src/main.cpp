@@ -16,10 +16,10 @@
 *   Last Modified: April 07, 2019
 *   ***************************************************************************/
 
-#include "topic.h"
-#include "commons.h"
 #include <iostream>
 #include <string>
+#include "sequence.h"
+#include "commons.h"
 
 bool ParseCommandLine(int argc, char** argv, std::string &out_sequence_path, std::string &out_sequence_name);
 
@@ -32,16 +32,11 @@ int main(int argc, char** argv)
     // Exit if the command line is not properly formatted
     if (!parsed) return 0;
 
-    std::vector<std::string> FileList = alfa::Commons::GetFileList(sequenceDir);
-    FileList = alfa::Commons::FilterFileList(FileList, "csv", true);
-    for (int i = 0; i < FileList.size(); ++i)
-        std::cout << FileList[i] << std::endl;
-
-    // Read the data from the given directory 
-    alfa::Topic topic(sequenceDir + sequenceName);
+    // Read the sequence from the given directory 
+    alfa::Sequence sequence(sequenceDir, sequenceName);
 
     // Print the first 10 data items
-    topic.Print(0, 10);
+    //seque.Print(0, 10);
 
     return 0;
 }

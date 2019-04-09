@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 07, 2019
+*   Last Modified: April 08, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_TOPIC_H
@@ -44,13 +44,13 @@ public:
     std::vector<Message> Messages;
 
     // Constructors & Deconstructors
-    Topic(std::string filename = "", std::string topic_name = "N/A");
+    Topic(const std::string &filename = "", const std::string &topic_name = "N/A");
 
     // Member Functions
-    bool ReadFromFile(std::string filename);
-    int Print(int n_start = 0, int n_messages = -1, std::string field_separator = " | ");
-    int PrintHeader(std::string field_separator = " | ");
-    bool IsInitialized();
+    bool ReadFromFile(const std::string &filename);
+    int Print(int n_start = 0, int n_messages = -1, const std::string &field_separator = " | ") const;
+    int PrintHeader(const std::string &field_separator = " | ") const;
+    bool IsInitialized() const;
     void Clear();
 
 private:
@@ -80,18 +80,18 @@ private:
 /******************************************************************************/
 
 // Contructor function for Topic. Loads a CSV file containing an ALFA dataset topic.
-Topic::Topic(std::string filename, std::string topic_name)
+Topic::Topic(const std::string &filename, const std::string &topic_name)
 {
     // Assign the given topic name
     Name = topic_name;
 
     // Read the given CSV file
-    if (filename.compare("") != 0)
+    if (!filename.empty())
         ReadFromFile(filename);
 }
 
 // Load a CSV file containing an ALFA dataset topic.
-bool Topic::ReadFromFile(std::string filename)
+bool Topic::ReadFromFile(const std::string &filename)
 {
     // Keep the topic name
     std::string topic_name = Name;
@@ -154,7 +154,7 @@ bool Topic::ReadFromFile(std::string filename)
 
 // Print a specified number of messages. Also prints the header first. 
 // Returns the number of messages printed.
-int Topic::Print(int n_start, int n_messages, std::string field_separator)
+int Topic::Print(int n_start, int n_messages, const std::string &field_separator) const
 {
     // Return if the start index is negative
     if (n_start < 0) return 0;
@@ -186,7 +186,7 @@ int Topic::Print(int n_start, int n_messages, std::string field_separator)
 
 // Print the topic header (message field labels).
 // Returns the length of the header line printed.
-int Topic::PrintHeader(std::string field_separator)
+int Topic::PrintHeader(const std::string &field_separator) const
 {
     // Ignore if there are no messages in the topic
     if (Messages.size() == 0) return 0;
@@ -218,7 +218,7 @@ int Topic::PrintHeader(std::string field_separator)
 }
 
 // Returns the initialization status
-bool Topic::IsInitialized()
+bool Topic::IsInitialized() const
 {
     return is_initialized;
 }
@@ -238,6 +238,10 @@ void Topic::Clear()
     len_fields.clear();
     orig_field_labels.clear();
 }
+
+/******************************************************************************/
+/*********************** Local Function Definitions ***************************/
+/******************************************************************************/
 
 // Convert a vector of tokens to a message
 Message Topic::TokensToMessage(const VecString &tokens)
