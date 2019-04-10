@@ -51,6 +51,7 @@ public:
     int Print(int n_start = 0, int n_messages = -1, const std::string &field_separator = " | ") const;
     int PrintHeader(const std::string &field_separator = " | ") const;
     bool IsInitialized() const;
+    bool IsFaultTopic();
     void Clear();
 
 private:
@@ -62,6 +63,9 @@ private:
 
     // Is the topic initialized or not
     bool is_initialized = false;
+
+    // Is the topic a fault topic
+    bool is_fault_topic = false;
 
     // Maximum length of the data fields (for better printing)
     int len_seqid = 0, len_secs = 0, len_nsecs = 0, len_frameid = 0;
@@ -150,6 +154,13 @@ bool Topic::ReadFromFile(const std::string &filename)
     // Postprocess the header labels
     ProcessHeader();
 
+    // It is not a fault topic if the topic name is shorter than the fault prefix
+    if (this->Name.length() >= Commons::FaultTopicPrefix.length()) 
+    {
+        // Check if the prefix of topic name is the fault prefix
+        is_fault_topic = (this->Name.substr(0, Commons::FaultTopicPrefix.length()) == Commons::FaultTopicPrefix);
+    }
+
     // Initialization done
     is_initialized = true;
 
@@ -227,6 +238,13 @@ bool Topic::IsInitialized() const
     return is_initialized;
 }
 
+// Returns true if the current topic is a fault topic
+bool Topic::IsFaultTopic()
+{
+    return is_fault_topic;
+}
+
+
 // Clear the entire topic object
 void Topic::Clear()
 {
@@ -235,6 +253,7 @@ void Topic::Clear()
     FieldLabels.clear();
     Messages.clear();
     is_initialized = false;
+    is_fault_topic = false;
     len_seqid = 0; 
     len_secs = 0;
     len_nsecs = 0;

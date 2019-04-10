@@ -180,14 +180,14 @@ Message Message::TokensToMessage(const VecString &tokens, const VecString &field
     // Check the type of the current token (time, header, etc.)
     for (int i = 0; i < static_cast<int>(field_labels.size()); ++i)
     {
-        if (field_labels[i].compare("time") == 0)                       // If it is timestamp
-            msg.DateTime = DateTime::StringToTime(tokens[i], Commons::CSVDateTimeFormat);
-        else if (field_labels[i].compare(".header.seq") == 0)           // If it is sequence id
+        if (field_labels[i].compare("%time") == 0)                       // If it is timestamp
+            msg.DateTime = DateTime::EpochStringToTime(tokens[i]);
+        else if (field_labels[i].compare("field.header.seq") == 0)       // If it is sequence id
         {
             Commons::StringToInt(tokens[i], msg.Header.SequenceID);
             out_len_seqid = tokens[i].length();
         }
-        else if (field_labels[i].compare(".header.stamp.secs") == 0)    // If it is header seconds
+        else if (field_labels[i].compare("field.header.stamp") == 0)    // If it is header seconds
         {
             Commons::StringToInt(tokens[i], msg.Header.TimeStamp.Secs);
             out_len_secs = tokens[i].length();

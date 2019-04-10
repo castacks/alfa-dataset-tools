@@ -61,6 +61,10 @@ public:
     void Clear();
     Message GetMessage(size_t msg_idx);
     void PrintBriefInfo();
+    std::vector<int> GetFaultTopics();
+    double GetTotalDuration();
+    double GetNormalFlightDuration();
+    int FindFirstFaultMessage();
 
 private:
     // Data Members
@@ -146,6 +150,7 @@ Message Sequence::GetMessage(size_t msg_idx)
 // Print some brief information like the number and names of topics, total messages, time, etc.
 void Sequence::PrintBriefInfo()
 {
+    // Cancel if the sequence is not initialized
     if (!IsInitialized())
     {
         std::cout << "Sequence is not initialized!" << std::endl;
@@ -154,10 +159,72 @@ void Sequence::PrintBriefInfo()
 
     std::cout << "Sequence Name    : " << Name << std::endl;
     std::cout << "Total Messages   : " << MessageIndexList.size() << std::endl;
-    std::cout << "Sequence Duration: " << "" << std::endl;
-    std::cout << Topics.size() << " Topics:" << std::endl;
+    
+    // Print the total flight duration in the sequence
+    double total_dur = GetTotalDuration();
+    int total_dur_mins = int(std::floor(total_dur) + 0.1) / 60;
+    std::cout << "Total Duration   : " << std::fixed << std::setprecision(1) << total_dur << " secs (" << total_dur_mins << " mins " 
+        << std::fixed << std::setprecision(1) << (total_dur - 60 * total_dur_mins) << " secs)" << std::endl;
+
+    // Print the normal flight duration before the fault happened in the sequence
+    double normal_dur = GetNormalFlightDuration();
+    int normal_dur_mins = int(std::floor(normal_dur) + 0.1) / 60;
+    std::cout << "Normal Flight    : " << std::fixed << std::setprecision(1) << normal_dur << " secs (" << normal_dur_mins << " mins " 
+        << std::fixed << std::setprecision(1) << (normal_dur - 60 * normal_dur_mins) << " secs)" << std::endl;
+
+    // List all the topics in the sequence
+    std::cout << "Sequence has " << Topics.size() << " Topics:" << std::endl;
     for (int i = 0; i < static_cast<int>(Topics.size()); ++i)
+    {
+        // Print * in front of the fault topics
+        if (Topics[i].IsFaultTopic()) std::cout << "*"; else std::cout << " ";
+
+        // Print the topic name and the number of the messages in the topic
         std::cout << std::setw(2) << i << ": " << Topics[i].Name << " (Size: " << Topics[i].Messages.size() << ")" << std::endl;
+    }
+}
+
+// Get the list of indices of the fault topics
+std::vector<int> Sequence::GetFaultTopics()
+{
+    std::vector<int> fault_topics;
+    for (int i = 0; i < static_cast<int>(Topics.size()); ++i)
+        if (Topics[i].IsFaultTopic())
+            fault_topics.push_back(i);
+    
+    return fault_topics;
+}
+
+// Get the total flight duration in seconds
+double Sequence::GetTotalDuration()
+{
+    return GetMessage(MessageIndexList.size() - 1).DateTime - GetMessage(0).DateTime;
+}
+
+
+// Get the normal flight (pre-failure flight) duration in seconds
+double Sequence::GetNormalFlightDuration()
+{
+    // Find the first fault
+    int msg_ind = FindFirstFaultMessage();
+    
+    // If no faults found, return the whole duration
+    if (msg_ind < 0) return GetTotalDuration();
+
+    // Return the flight duration before the fault happened
+    return GetMessage(msg_ind - 1).DateTime - GetMessage(0).DateTime;
+}
+
+// Find the index of the first fault message in the sequence message list
+int Sequence::FindFirstFaultMessage()
+{
+    // Iterate through all the messages to find the first fault
+    for (int i = 0; i < static_cast<int>(MessageIndexList.size()); ++i)
+        if (Topics[MessageIndexList[i].TopicIdx].IsFaultTopic())
+            return i;
+
+    // If no fault topics found, return -1
+    return -1;
 }
 
 /******************************************************************************/
