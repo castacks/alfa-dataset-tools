@@ -38,6 +38,15 @@ int main(int argc, char** argv)
 
     // Print some information about the sequence
     sequence.PrintBriefInfo();
+    std::cout << std::endl;
+
+    // Print 2 first messages of the first 5 topics
+    for (int i = 0; (i < (int)sequence.Topics.size()) && (i < 5); ++i)
+    {
+        std::cout << "Messages from topic " << sequence.Topics[i].Name << std::endl;
+        sequence.Topics[i].Print(0, 2);
+        std::cout << std::endl;
+    }
 
     return 0;
 }

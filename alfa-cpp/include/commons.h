@@ -58,6 +58,7 @@ public:
     static std::vector<std::string> Tokenize(const std::string &input, const char delim);
     static bool StringToInt(const std::string &str, int &out_number);
     static bool StringToLong(const std::string &str, long &out_number);
+    static bool StringToLongLong(const std::string &str, long long &out_number);
     static VecString GetFileList(const std::string &dir_path);
     static VecString FilterFileList(const VecString &file_list, const std::string &extension, const bool remove_extension = false);
     static bool ExtractFilenameAndExtension(const std::string &file_path, std::string &out_filename, std::string &out_extension, std::string &out_directory);
@@ -84,10 +85,7 @@ const char PathSeparator =
 // The prefix added to all the field labels in the CSV file
 const std::string Commons::CSVFieldsPrefix = "field.";
 
-// The format of the datetime in the topic CSV files (the format has changed now)
-const std::string Commons::CSVDateTimeFormat = "%d/%d/%d/%d:%d:%d.%d";
-
-// The format of the datetime in the topic CSV files
+// The prefix of the failure topics in the sequences
 const std::string Commons::FaultTopicPrefix = "failure_status";
 
 // Break a string into smaller tokens using a delimiter
@@ -110,28 +108,38 @@ std::vector<std::string> Commons::Tokenize(const std::string &input, const char 
 // Convert a string to a long integer type. Returns false if the string is not exactly a long integer.
 bool Commons::StringToLong(const std::string &str, long &out_number)
 {
-    char *endptr;
-    long value = std::strtol(str.c_str(), &endptr, 10);
-    
-    // if the conversion is not successful
-    if (*endptr != '\0')
-        return false;
+    // Convert to long long integer first
+    long long temp;
+    if (!StringToLongLong(str, temp)) return false;
 
-    // Otherwise, convert to integer
-    out_number = value;
+    // If successfull, convert to integer
+    out_number = (long)temp;
     return true;
 }
 
 // Convert a string to an integer type. Returns false if the string is not exactly an integer.
 bool Commons::StringToInt(const std::string &str, int &out_number)
 {
-    // Convert to long integer first
-    long temp;
-    if (!StringToLong(str, temp))
-        return false;
+    // Convert to long long integer first
+    long long temp;
+    if (!StringToLongLong(str, temp)) return false;
 
     // If successfull, convert to integer
     out_number = (int)temp;
+    return true;
+}
+
+// Convert a string to a long long type. Returns false if the string is not exactly a long long integer.
+bool Commons::StringToLongLong(const std::string &str, long long &out_number)
+{
+    char *endptr;
+    long long value = std::strtoll(str.c_str(), &endptr, 10);
+    
+    // If the conversion is not successful
+    if (*endptr != '\0') return false;
+
+    // Otherwise, set the output variable
+    out_number = value;
     return true;
 }
 
@@ -215,7 +223,7 @@ bool Commons::ExtractFilenameAndExtension(const std::string &file_path, std::str
 VecString Commons::FilterFileList(const VecString &file_list, const std::string &extension, const bool remove_extension)
 {
     VecString filtered_list;
-    for (int i = 0; i < static_cast<int>(file_list.size()); ++i)
+    for (int i = 0; i < (int)file_list.size(); ++i)
     {
         // Find the file extension position
         int ext_pos = file_list[i].find_last_of(".");
@@ -374,8 +382,8 @@ DateTime DateTime::EpochStringToTime(const std::string &epoch)
         return DateTime();
     
     // Get the epoch seconds
-    long secs; 
-    if (!Commons::StringToLong(sec_str, secs))
+    long long secs; 
+    if (!Commons::StringToLongLong(sec_str, secs))
         return DateTime();
     
     // Convert the seconds to time_t structure

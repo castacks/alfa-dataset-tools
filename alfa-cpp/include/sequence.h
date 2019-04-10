@@ -106,7 +106,7 @@ bool Sequence::LoadSequence(const std::string &sequence_dir, const std::string &
     }
 
     // Load all the topics
-    for (int i = 0; i < static_cast<int>(topic_list.size()); ++i)
+    for (int i = 0; i < (int)topic_list.size(); ++i)
     {
         std::string topic_full_filename = sequence_dir + topic_file_list[i] + "." + Commons::CSVFileExtension;
         Topics.push_back(Topic(topic_full_filename, topic_list[i]));
@@ -174,7 +174,7 @@ void Sequence::PrintBriefInfo()
 
     // List all the topics in the sequence
     std::cout << "Sequence has " << Topics.size() << " Topics:" << std::endl;
-    for (int i = 0; i < static_cast<int>(Topics.size()); ++i)
+    for (int i = 0; i < (int)Topics.size(); ++i)
     {
         // Print * in front of the fault topics
         if (Topics[i].IsFaultTopic()) std::cout << "*"; else std::cout << " ";
@@ -188,7 +188,7 @@ void Sequence::PrintBriefInfo()
 std::vector<int> Sequence::GetFaultTopics()
 {
     std::vector<int> fault_topics;
-    for (int i = 0; i < static_cast<int>(Topics.size()); ++i)
+    for (int i = 0; i < (int)Topics.size(); ++i)
         if (Topics[i].IsFaultTopic())
             fault_topics.push_back(i);
     
@@ -219,7 +219,7 @@ double Sequence::GetNormalFlightDuration()
 int Sequence::FindFirstFaultMessage()
 {
     // Iterate through all the messages to find the first fault
-    for (int i = 0; i < static_cast<int>(MessageIndexList.size()); ++i)
+    for (int i = 0; i < (int)MessageIndexList.size(); ++i)
         if (Topics[MessageIndexList[i].TopicIdx].IsFaultTopic())
             return i;
 
@@ -267,7 +267,7 @@ bool Sequence::ExtractTopicNames(VecString &out_topic_files, VecString &out_topi
     std::sort(dir_file_list.begin(), dir_file_list.end());
 
     // Extract the topic names from their file names
-    for (int i = 0; i < static_cast<int>(dir_file_list.size()); ++i)
+    for (int i = 0; i < (int)dir_file_list.size(); ++i)
     {
         std::string topic_name = ExtractTopicName(dir_file_list[i]);
         if (!topic_name.empty())
@@ -294,7 +294,7 @@ void Sequence::CreateMessageList()
 
     // Initialize the min heap using the first message of the topics
     std::priority_queue<KeyValuePair, std::vector<KeyValuePair>, std::greater<KeyValuePair> > min_heap;
-    for (int i = 0; i < static_cast<int>(Topics.size()); ++i)
+    for (int i = 0; i < (int)Topics.size(); ++i)
         if (!Topics[i].Messages.empty())
             min_heap.push(KeyValuePair(Topics[i].Messages[0], i));
 
@@ -310,7 +310,7 @@ void Sequence::CreateMessageList()
 
         // Add the new message from the topic
         ++curr_index[t_idx];
-        if (curr_index[t_idx] < static_cast<int>(Topics[t_idx].Messages.size()))
+        if (curr_index[t_idx] < (int)Topics[t_idx].Messages.size())
             min_heap.push(KeyValuePair(Topics[t_idx].Messages[curr_index[t_idx]], t_idx));
     }
 }
