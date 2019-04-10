@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 08, 2019
+*   Last Modified: April 10, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_SEQUENCE_H
@@ -60,6 +60,7 @@ public:
     bool IsInitialized() const;
     void Clear();
     Message GetMessage(size_t msg_idx);
+    void PrintBriefInfo();
 
 private:
     // Data Members
@@ -103,7 +104,6 @@ bool Sequence::LoadSequence(const std::string &sequence_dir, const std::string &
     // Load all the topics
     for (int i = 0; i < static_cast<int>(topic_list.size()); ++i)
     {
-        std::cout << "Loading topic: " << topic_list[i] << std::endl;
         std::string topic_full_filename = sequence_dir + topic_file_list[i] + "." + Commons::CSVFileExtension;
         Topics.push_back(Topic(topic_full_filename, topic_list[i]));
     }
@@ -121,6 +121,43 @@ bool Sequence::LoadSequence(const std::string &sequence_dir, const std::string &
 bool Sequence::IsInitialized() const
 {
     return is_initialized;
+}
+
+// Clear the entire sequence object
+void Sequence::Clear()
+{
+    Name = "N/A";
+    DirectoryPath = "";
+    Topics.clear();
+    MessageIndexList.clear();
+    is_initialized = false;
+}
+
+// Get messages by index from the message collection sorted by the recording time
+Message Sequence::GetMessage(size_t msg_idx)
+{
+    // Check if the index is in range
+    if (msg_idx >= MessageIndexList.size())
+        return Message();
+    
+    return Topics[MessageIndexList[msg_idx].TopicIdx].Messages[MessageIndexList[msg_idx].MessageIdx];
+}
+
+// Print some brief information like the number and names of topics, total messages, time, etc.
+void Sequence::PrintBriefInfo()
+{
+    if (!IsInitialized())
+    {
+        std::cout << "Sequence is not initialized!" << std::endl;
+        return;
+    }
+
+    std::cout << "Sequence Name    : " << Name << std::endl;
+    std::cout << "Total Messages   : " << MessageIndexList.size() << std::endl;
+    std::cout << "Sequence Duration: " << "" << std::endl;
+    std::cout << Topics.size() << " Topics:" << std::endl;
+    for (int i = 0; i < static_cast<int>(Topics.size()); ++i)
+        std::cout << std::setw(2) << i << ": " << Topics[i].Name << " (Size: " << Topics[i].Messages.size() << ")" << std::endl;
 }
 
 /******************************************************************************/

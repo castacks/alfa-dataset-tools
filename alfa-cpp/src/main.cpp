@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 07, 2019
+*   Last Modified: April 10, 2019
 *   ***************************************************************************/
 
 #include <iostream>
@@ -36,8 +36,8 @@ int main(int argc, char** argv)
     // Read the sequence from the given directory 
     alfa::Sequence sequence(sequenceDir, sequenceName);
 
-    // Print the first 10 data items
-    //seque.Print(0, 10);
+    // Print some information about the sequence
+    sequence.PrintBriefInfo();
 
     return 0;
 }
