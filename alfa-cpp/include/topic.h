@@ -132,8 +132,12 @@ bool Topic::ReadFromFile(const std::string &filename)
         // Break the line to tokens
         auto tokens = Commons::Tokenize(line, Commons::CSVDelimiter);
 
+        // Add empty tokens if the line did not include all the fields
+        while (tokens.size() < this->orig_field_labels.size())
+            tokens.push_back("");
+
         // Print an error and stop operation if file is not formatted properly
-        if (tokens.size() != this->orig_field_labels.size())
+        if (tokens.size() > this->orig_field_labels.size())
         {
             std::cerr << "Error converting line #" << line_number << " of '" << filename << "'. Skipping this topic!" << std::endl;
             break;
