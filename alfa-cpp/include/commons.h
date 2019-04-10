@@ -57,6 +57,7 @@ public:
     static bool StringToInt(const std::string &str, int &out_number);
     static VecString GetFileList(const std::string &dir_path);
     static VecString FilterFileList(const VecString &file_list, const std::string &extension, const bool remove_extension = false);
+    static bool ExtractFilenameAndExtension(const std::string &file_path, std::string &out_filename, std::string &out_extension, std::string &out_directory);
 };
 
 /******************************************************************************/
@@ -131,19 +132,62 @@ VecString Commons::GetFileList(const std::string &dir_path)
             FindClose(hFind);
         }
     #else                                       // POSIX implementation to obtain the list of files
-
         // Open the directory file
         DIR* dirp = opendir(dir_path.c_str());
-        struct dirent * dp;
 
-        // Read all the filenames and add them to the vector
-        while ((dp = readdir(dirp)) != NULL)
-            file_list.push_back(dp->d_name);
-        
-        // Close the directory file
-        closedir(dirp);
+        // If successfully opened
+        if (dirp)
+        {
+            struct dirent * dp;
+
+            // Read all the filenames and add them to the vector
+            while ((dp = readdir(dirp)) != NULL)
+                file_list.push_back(dp->d_name);
+            
+            // Close the directory file
+            closedir(dirp);
+        }
     #endif
     return file_list;
+}
+
+// Return the filename, directory and the extension from the file path
+bool Commons::ExtractFilenameAndExtension(const std::string &file_path, std::string &out_filename, 
+    std::string &out_extension, std::string &out_directory)
+{
+    // Initialize the outputs
+    out_filename = "";
+    out_extension = "";
+
+    try
+    {
+        // Find the file extension position
+        int ext_pos = file_path.find_last_of(".");
+
+        // Extract the file extension and convert to lower case
+        out_extension = file_path.substr(ext_pos + 1);
+        std::transform(out_extension.begin(), out_extension.end(), out_extension.begin(), ::tolower);
+
+        // Remove the extension
+        out_filename = file_path.substr(0, ext_pos);
+
+        // Find the filename position
+        int file_pos = out_filename.find_last_of(PathSeparator);
+        if (file_pos == std::string::npos) file_pos = -1;
+
+        // Extract the file name
+        out_filename = out_filename.substr(file_pos + 1);
+
+        // Extract the directory
+        out_directory = file_path.substr(0, file_pos);
+
+        return true;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
 }
 
 // Return the list of files in the input list that have the desired extension

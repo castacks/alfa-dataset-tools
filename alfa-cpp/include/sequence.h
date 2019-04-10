@@ -50,17 +50,16 @@ public:
     std::string Name = "N/A";
     std::string DirectoryPath;
     std::vector<Topic> Topics;
-    std::vector<MessageIndex> MessageList;
+    std::vector<MessageIndex> MessageIndexList;
 
     // Constructors & Deconstructors
     Sequence(const std::string &sequence_dir = "", const std::string &sequence_name = "N/A");
 
     // Member Functions
     bool LoadSequence(const std::string &sequence_dir, const std::string &sequence_name);
-    //int Print(int n_start = 0, int n_messages = -1, std::string field_separator = " | ");
-    //int PrintHeader(std::string field_separator = " | ");
     bool IsInitialized() const;
-    //void Clear();
+    void Clear();
+    Message GetMessage(size_t msg_idx);
 
 private:
     // Data Members
@@ -180,8 +179,7 @@ bool Sequence::ExtractTopicNames(VecString &out_topic_files, VecString &out_topi
     return true;
 }
 
-// Merge all the messages in all the topics into MessageList sorted by their recorded time
-// Can be implemented more efficiently using merge sort
+// Merge all the messages in all the topics into MessageIndexList sorted by their recorded time
 void Sequence::CreateMessageList()
 {
     // Define a typedef for simplicity
@@ -201,7 +199,7 @@ void Sequence::CreateMessageList()
     {
         // Add the smallest message to the list
         int t_idx = min_heap.top().second;
-        MessageList.push_back(MessageIndex(t_idx, curr_index[t_idx]));
+        MessageIndexList.push_back(MessageIndex(t_idx, curr_index[t_idx]));
         
         // Remove the message from the heap
         min_heap.pop();

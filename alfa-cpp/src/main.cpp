@@ -22,6 +22,7 @@
 #include "commons.h"
 
 bool ParseCommandLine(int argc, char** argv, std::string &out_sequence_path, std::string &out_sequence_name);
+void PrintHelpMessage();
 
 int main(int argc, char** argv)
 {
@@ -44,24 +45,38 @@ int main(int argc, char** argv)
 // Parse command-line arguments
 bool ParseCommandLine(int argc, char** argv, std::string &out_sequence_path, std::string &out_sequence_name) 
 {
-    if ((argc != 3) || (argv[argc-1] == NULL) || (argv[argc-1][0] == '-') ) 
+    // Check the number and the format of the inputs
+    if ((argc != 2) || (argv[argc-1] == NULL) || (argv[argc-1][0] == '-') ) 
     {
-        // The input is in incorrect format
-        std::cout << "Please provide the path and name of the sequence!" << std::endl;
-        std::cout << "Usage (in Linux/Mac):" << std::endl;
-        std::cout << "./main path/to/sequence/folder sequence_name" << std::endl;
-        std::cout << "Usage (in Windows):" << std::endl;
-        std::cout << "main.exe path\\to\\sequence\\folder sequence_name" << std::endl;
+        PrintHelpMessage();
         return false;
     }
 
     // Extract the path and the sequence name
-    out_sequence_path = std::string(argv[1]);
-    out_sequence_name = std::string(argv[2]);
+    std::string bag_path = std::string(argv[1]);
+    std::string extension;
+    bool extracted = alfa::Commons::ExtractFilenameAndExtension(bag_path, out_sequence_name, extension, out_sequence_path);
+
+    // Check that the file exists and extension is correct
+    if (!extracted || (extension != "bag"))
+    {
+        PrintHelpMessage();
+        return false;
+    }
 
     // Add the path separator to the path
-    if (out_sequence_path[out_sequence_path.length() - 1] != alfa::PathSeparator) 
+    if (out_sequence_path.empty() || out_sequence_path[out_sequence_path.length() - 1] != alfa::PathSeparator) 
         out_sequence_path += alfa::PathSeparator;
 
     return true;
+}
+
+// Print a message for the user about the command line input format
+void PrintHelpMessage()
+{
+    std::cout << "Please provide the path to the sequence bag file!" << std::endl;
+    std::cout << "Usage (in Linux/Mac):" << std::endl;
+    std::cout << "./main path/to/sequence/bagfile.bag" << std::endl;
+    std::cout << "Usage (in Windows):" << std::endl;
+    std::cout << "main.exe path\\to\\sequence\\bagfile.bag" << std::endl;
 }
