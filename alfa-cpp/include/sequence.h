@@ -25,6 +25,7 @@
 #include <cctype>
 #include <algorithm>
 #include <queue>
+#include <functional>
 #include "commons.h"
 #include "topic.h"
 
