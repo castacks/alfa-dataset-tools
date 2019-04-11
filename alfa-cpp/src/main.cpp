@@ -74,8 +74,8 @@ bool ParseCommandLine(int argc, char** argv, std::string &out_sequence_path, std
     }
 
     // Add the path separator to the path
-    if (out_sequence_path.empty() || out_sequence_path[out_sequence_path.length() - 1] != alfa::PathSeparator) 
-        out_sequence_path += alfa::PathSeparator;
+    if (out_sequence_path.empty() || out_sequence_path[out_sequence_path.length() - 1] != alfa::Commons::FilePathSeparator) 
+        out_sequence_path += alfa::Commons::FilePathSeparator;
 
     return true;
 }

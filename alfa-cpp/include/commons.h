@@ -75,7 +75,7 @@ const char Commons::CSVDelimiter = ',';
 const std::string Commons::CSVFileExtension = "csv";
 
 // The OS-specific separator for the file paths
-const char PathSeparator = 
+const char Commons::FilePathSeparator = 
 #if defined _WIN32 || defined __CYGWIN__
     '\\';
 #else
@@ -201,7 +201,7 @@ bool Commons::ExtractFilenameAndExtension(const std::string &file_path, std::str
         out_filename = file_path.substr(0, ext_pos);
 
         // Find the filename position
-        int file_pos = out_filename.find_last_of(PathSeparator);
+        int file_pos = out_filename.find_last_of(FilePathSeparator);
         if (file_pos == std::string::npos) file_pos = -1;
 
         // Extract the file name

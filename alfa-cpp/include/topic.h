@@ -52,6 +52,7 @@ public:
     int PrintHeader(const std::string &field_separator = " | ") const;
     bool IsInitialized() const;
     bool IsFaultTopic();
+    bool HasHeaderField();
     void Clear();
 
 private:
@@ -77,6 +78,9 @@ private:
     // Header strings for printing
     const std::string hdr_ind = "Index", hdr_datetime = "Date/Time Stamp";
     const std::string hdr_seq = "SeqID", hdr_stamp = "Time Stamp", hdr_frid = "Frame";
+
+    // Keep if the topic has header field
+    bool has_header = false;
 };
 
 /******************************************************************************/
@@ -190,7 +194,7 @@ int Topic::Print(int n_start, int n_messages, const std::string &field_separator
     for (int i = n_start; (i < n_start + n_messages) && (i < (int)Messages.size()); ++i)
     {
         std::cout << field_separator << std::setw(hdr_ind.length()) << i << field_separator << 
-            Messages[i].ToString(len_seqid, len_stamp, len_frameid, len_fields, field_separator) 
+            Messages[i].ToString(len_seqid, len_stamp, len_frameid, len_fields, has_header, field_separator) 
             << field_separator << std::endl;
         printed_messages++;
     }
@@ -215,9 +219,10 @@ int Topic::PrintHeader(const std::string &field_separator) const
         total_len += len_fields[i];
     total_len += (6 + FieldLabels.size()) * field_separator.length();
 
-    // Print the index, time and the Header object
-    std::cout << field_separator << hdr_ind << field_separator << std::setw(len_datetime) << hdr_datetime <<
-            field_separator << std::setw(len_seqid) << hdr_seq << field_separator <<
+    // Print the index, time and the Header object (if it has one)
+    std::cout << field_separator << hdr_ind << field_separator << std::setw(len_datetime) << hdr_datetime;
+    if (has_header)
+        std::cout << field_separator << std::setw(len_seqid) << hdr_seq << field_separator <<
             std::setw(len_stamp) << hdr_stamp << field_separator << std::setw(len_frameid) << hdr_frid;
 
     // Print the rest of the field labels
@@ -243,6 +248,10 @@ bool Topic::IsFaultTopic()
     return is_fault_topic;
 }
 
+bool Topic::HasHeaderField()
+{
+    return has_header;
+}
 
 // Clear the entire topic object
 void Topic::Clear()
@@ -258,6 +267,7 @@ void Topic::Clear()
     len_frameid = 0;
     len_fields.clear();
     orig_field_labels.clear();
+    has_header = false;
 }
 
 /******************************************************************************/
@@ -296,14 +306,19 @@ void Topic::ProcessHeader()
     // Iterate through all the column labels read from file
     for (int i = 0; i < (int)orig_field_labels.size(); ++i)
     {
-        // Ignore if it is for the timestamp of the header class
-        if (orig_field_labels[i].compare("%time") == 0
-            || orig_field_labels[i].compare(Commons::CSVFieldsPrefix + "header.seq") == 0
+        // Ignore if it is for the timestamp
+        if (orig_field_labels[i].compare("%time") == 0) continue;
+
+        // Ignore if it is for the header fields, also remember we have a header
+        if (orig_field_labels[i].compare(Commons::CSVFieldsPrefix + "header.seq") == 0
             || orig_field_labels[i].compare(Commons::CSVFieldsPrefix + "header.stamp") == 0
             || orig_field_labels[i].compare(Commons::CSVFieldsPrefix + "header.frame_id") == 0)
+        {
+            has_header = true;
             continue;
+        }
 
-        // Remove the starting '.' if the label starts with it
+        // Remove the starting prefix if the label starts with it
         if (orig_field_labels[i].substr(0, Commons::CSVFieldsPrefix.size()) == Commons::CSVFieldsPrefix)
             FieldLabels.push_back(orig_field_labels[i].substr(Commons::CSVFieldsPrefix.size()));
         else

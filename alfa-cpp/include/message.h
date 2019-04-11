@@ -47,8 +47,8 @@ public:
     VecString Fields;           // Message Fields
 
     // Member Functions
-    std::string ToString(std::string separator = " | ") const;
-    std::string ToString(int l_seq, int l_stamp, int l_frid, std::vector<int> l_fields, std::string separator = " | ") const;
+    std::string ToString(bool has_header = true, std::string separator = " | ") const;
+    std::string ToString(int l_seq, int l_stamp, int l_frid, std::vector<int> l_fields, bool has_header = true, std::string separator = " | ") const;
     bool operator< (const Message &msg) const;
     bool operator> (const Message &msg) const;
     bool operator== (const Message &msg) const;
@@ -71,23 +71,24 @@ std::ostream& operator<< (std::ostream& os, const Message& msg)
 /******************************************************************************/
 
 // Convert Message to string, using the default values for fiels sizes
-std::string Message::ToString(std::string separator) const
+std::string Message::ToString(bool has_header, std::string separator) const
 {
-    return ToString(5, 10, 0, std::vector<int>(Fields.size()));
+    return ToString(5, 10, 0, std::vector<int>(Fields.size()), has_header, separator);
 }
 
 // Convert Message to string, given the minimum spacing for each field member
 std::string Message::ToString(int l_seq, int l_stamp, int l_frid, 
-        std::vector<int> l_fields, std::string separator) const
+        std::vector<int> l_fields, bool has_header, std::string separator) const
 {
     // Create an output string stream
     std::ostringstream oss;
 
-    // Write the time and the header in the string stream
-    oss << DateTime << separator << 
-        std::setw(l_seq) << Header.SequenceID << separator <<
-        std::setw(l_stamp) << Header.Stamp << separator << 
-        std::setw(l_frid) << Header.FrameID;
+    // Write the time and the header (if it has one) in the string stream
+    oss << DateTime;
+    if (has_header)
+        oss << separator << std::setw(l_seq) << Header.SequenceID << separator <<
+            std::setw(l_stamp) << Header.Stamp << separator << 
+            std::setw(l_frid) << Header.FrameID;
 
     // Write the fields in the string stream
     for (int i = 0; i < (int)Fields.size(); ++i)
@@ -174,24 +175,24 @@ Message Message::TokensToMessage(const VecString &tokens, const VecString &field
     // Check the type of the current token (time, header, etc.)
     for (int i = 0; i < (int)field_labels.size(); ++i)
     {
-        if (field_labels[i].compare("%time") == 0)                       // If it is timestamp
+        if (field_labels[i].compare("%time") == 0)                                              // If it is timestamp
             msg.DateTime = DateTime::EpochStringToTime(tokens[i]);
-        else if (field_labels[i].compare(Commons::CSVFieldsPrefix + "header.seq") == 0)       // If it is sequence id
+        else if (field_labels[i].compare(Commons::CSVFieldsPrefix + "header.seq") == 0)         // If it is sequence id
         {
             Commons::StringToInt(tokens[i], msg.Header.SequenceID);
             out_len_seqid = tokens[i].length();
         }
-        else if (field_labels[i].compare(Commons::CSVFieldsPrefix + "header.stamp") == 0)    // If it is header nanoseconds
+        else if (field_labels[i].compare(Commons::CSVFieldsPrefix + "header.stamp") == 0)       // If it is header stamp
         {
             Commons::StringToLongLong(tokens[i], msg.Header.Stamp);
             out_len_stamp = tokens[i].length();
         }
-        else if (field_labels[i].compare(Commons::CSVFieldsPrefix + "header.frame_id") == 0)      // If it is frame id
+        else if (field_labels[i].compare(Commons::CSVFieldsPrefix + "header.frame_id") == 0)     // If it is frame id
         {
             msg.Header.FrameID = tokens[i];
             out_len_frameid = tokens[i].length();
         }
-        else                                                            // If it is any other field
+        else                                                                                      // If it is any other field
         {
             msg.Fields.push_back(tokens[i]);
             out_len_fields.push_back(tokens[i].length());
