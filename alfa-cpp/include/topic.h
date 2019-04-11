@@ -214,10 +214,13 @@ int Topic::PrintHeader(const std::string &field_separator) const
     int len_datetime = Messages[0].DateTime.ToString().length();
 
     // Measure the total line length
-    int total_len = hdr_ind.length() + len_datetime + len_seqid + len_stamp + len_frameid;
+    int total_len = hdr_ind.length() + len_datetime;
+    if (has_header) total_len += len_seqid + len_stamp + len_frameid;
     for (int i = 0; i < (int)FieldLabels.size(); ++i)
         total_len += len_fields[i];
-    total_len += (6 + FieldLabels.size()) * field_separator.length();
+    total_len += (3 + FieldLabels.size()) * field_separator.length();
+    if (has_header)
+        total_len += 3 * field_separator.length();
 
     // Print the index, time and the Header object (if it has one)
     std::cout << field_separator << hdr_ind << field_separator << std::setw(len_datetime) << hdr_datetime;

@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <queue>
 #include <functional>
+#include <map>
 #include "commons.h"
 #include "topic.h"
 
@@ -65,10 +66,12 @@ public:
     double GetTotalDuration();
     double GetNormalFlightDuration();
     int FindFirstFaultMessage();
+    int FindTopicIndex(std::string topic_name);
 
 private:
     // Data Members
     bool is_initialized = false;
+    std::map<std::string, int> topic_map;
 
     // Member Functions
     std::string ExtractTopicName(const std::string &topic_filename);
@@ -115,6 +118,10 @@ bool Sequence::LoadSequence(const std::string &sequence_dir, const std::string &
     // Create the sorted message list of all the topics
     CreateMessageList();
 
+    // Create the table of the topic names vs. their indices
+    for (int i = 0; i < (int)Topics.size(); ++i)
+        this->topic_map.insert(std::make_pair(Topics[i].Name, i));
+
     // Initialization done
     is_initialized = true;
 
@@ -135,6 +142,7 @@ void Sequence::Clear()
     Topics.clear();
     MessageIndexList.clear();
     is_initialized = false;
+    topic_map.clear();
 }
 
 // Get messages by index from the message collection sorted by the recording time
@@ -201,7 +209,6 @@ double Sequence::GetTotalDuration()
     return GetMessage(MessageIndexList.size() - 1).DateTime - GetMessage(0).DateTime;
 }
 
-
 // Get the normal flight (pre-failure flight) duration in seconds
 double Sequence::GetNormalFlightDuration()
 {
@@ -225,6 +232,17 @@ int Sequence::FindFirstFaultMessage()
 
     // If no fault topics found, return -1
     return -1;
+}
+
+// Find the index of a given topic (case sensitive)
+int Sequence::FindTopicIndex(std::string topic_name)
+{
+    std::map<std::string, int>::iterator it = topic_map.find(topic_name);
+
+    // Return -1 if not found
+    if (it == topic_map.end()) return -1;
+
+    return it->second;        
 }
 
 /******************************************************************************/

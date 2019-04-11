@@ -23,6 +23,7 @@
 
 bool ParseCommandLine(int argc, char** argv, std::string &out_sequence_path, std::string &out_sequence_name);
 void PrintHelpMessage();
+void PrintProjectInfo();
 
 int main(int argc, char** argv)
 {
@@ -40,13 +41,40 @@ int main(int argc, char** argv)
     sequence.PrintBriefInfo();
     std::cout << std::endl;
 
-    // Print 2 first messages of the first 5 topics
-    for (int i = 0; (i < (int)sequence.Topics.size()) && (i < 5); ++i)
+    // Find the index for a sample topic
+    int mytopic_idx = sequence.FindTopicIndex("mavros-nav_info-roll");
+
+    // Print 10 messages starting from number 20 from this topic
+    if (mytopic_idx != -1)
     {
-        std::cout << "Messages from topic " << sequence.Topics[i].Name << std::endl;
-        sequence.Topics[i].Print(0, 2);
+        std::cout << "Messages from topic " << sequence.Topics[mytopic_idx].Name << ":" << std::endl;
+        std::cout << std::endl;
+        sequence.Topics[mytopic_idx].Print(20, 10);
         std::cout << std::endl;
     }
+
+    // Print the info for the first 10 messages in the whole sequence
+    std::cout << "Info on the first 10 messages in the sequence:" << std::endl;
+    for (int i = 0; (i < 10) && (i < (int)sequence.MessageIndexList.size()); ++i)
+    {
+        int topic_idx = sequence.MessageIndexList[i].TopicIdx;
+        int message_idx = sequence.MessageIndexList[i].MessageIdx;
+        std::cout << std::setw(2) << i << " | Time: " << sequence.GetMessage(i).DateTime <<
+            " | Topic: " << sequence.Topics[topic_idx].Name << std::endl;
+    }
+    std::cout << std::endl;
+
+    // Print the first fault message
+    int fault_msg_idx = sequence.FindFirstFaultMessage();
+    int fault_topic_idx = sequence.MessageIndexList[fault_msg_idx].TopicIdx;
+    std::cout << "The first fault message in the sequence is from '" << sequence.Topics[fault_topic_idx].Name << "' topic." << std::endl;
+    std::cout << "The fault happens after " << sequence.GetMessage(fault_msg_idx).DateTime - sequence.GetMessage(0).DateTime << " seconds." << std::endl;
+    sequence.Topics[fault_topic_idx].Print(0, 1);
+    std::cout << std::endl;
+
+    // Print a message about the project
+    PrintProjectInfo();
+    std::cout << std::endl;
 
     return 0;
 }
@@ -88,4 +116,25 @@ void PrintHelpMessage()
     std::cout << "./main path/to/sequence/bagfile.bag" << std::endl;
     std::cout << "Usage (in Windows):" << std::endl;
     std::cout << "main.exe path\\to\\sequence\\bagfile.bag" << std::endl;
+}
+
+// Print information about the project
+void PrintProjectInfo()
+{
+    std::cout << "************************************************************************" << std::endl; 
+    std::cout << "* Thank you for using the ALFA dataset!                                *" << std::endl;
+    std::cout << "* Please contact us about any questions or to report any bugs.         *" << std::endl;
+    std::cout << "************************************************************************" << std::endl; 
+    std::cout << "* For more information about the dataset, please refer to:             *" << std::endl;
+    std::cout << "* http://theairlab.org/alfa-dataset                                    *" << std::endl;
+    std::cout << "*                                                                      *" << std::endl;
+    std::cout << "* For more information about this project and the publications related *" << std::endl;
+    std::cout << "* to the dataset and this work, please refer to:                       *" << std::endl;
+    std::cout << "* http://theairlab.org/fault-detection-project                         *" << std::endl;
+    std::cout << "*                                                                      *" << std::endl;
+    std::cout << "* Air Lab, Robotics Institute, Carnegie Mellon University              *" << std::endl;
+    std::cout << "*                                                                      *" << std::endl;
+    std::cout << "* Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer  *" << std::endl;
+    std::cout << "* Contact: keipour@cmu.edu                                             *" << std::endl;
+    std::cout << "* **********************************************************************" << std::endl; 
 }
