@@ -4,7 +4,7 @@ This repository is still under development...
 
 ## Introduction
 
-This repository contains the basic tools to work with the AIR Lab Fault Detection (ALFA) Dataset. This dataset contains autonomous flight sequences of a UAV plane with eight different types of fault happening during the flights and is provided to help advance fault and anomaly detection and isolation research. 
+This repository contains the basic tools to work with the AIR Lab Fault Detection (ALFA) Dataset. ALFA dataset contains autonomous flight sequences of a UAV plane with eight different types of fault happening during the flights and is provided to help advance fault and anomaly detection and isolation research. 
 
 For more information about the dataset, please refer to [http://theairlab.org/alfa-dataset](http://theairlab.org/alfa-dataset).
 
