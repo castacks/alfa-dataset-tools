@@ -170,13 +170,13 @@ void Sequence::PrintBriefInfo()
     
     // Print the total flight duration in the sequence
     double total_dur = GetTotalDuration();
-    int total_dur_mins = int(std::floor(total_dur) + 0.1) / 60;
+    int total_dur_mins = int(total_dur) / 60;
     std::cout << "Total Duration   : " << std::fixed << std::setprecision(1) << total_dur << " secs (" << total_dur_mins << " mins " 
         << std::fixed << std::setprecision(1) << (total_dur - 60 * total_dur_mins) << " secs)" << std::endl;
 
     // Print the normal flight duration before the fault happened in the sequence
     double normal_dur = GetNormalFlightDuration();
-    int normal_dur_mins = int(std::floor(normal_dur) + 0.1) / 60;
+    int normal_dur_mins = int(normal_dur) / 60;
     std::cout << "Normal Flight    : " << std::fixed << std::setprecision(1) << normal_dur << " secs (" << normal_dur_mins << " mins " 
         << std::fixed << std::setprecision(1) << (normal_dur - 60 * normal_dur_mins) << " secs)" << std::endl;
 
