@@ -10,7 +10,4 @@ include_directories(include)
 # Add example executable
 add_executable(main 
     src/main.cpp 
-    )
-
-# Link libraries with executable
-target_link_libraries(main)
+)
