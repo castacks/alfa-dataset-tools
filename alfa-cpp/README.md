@@ -35,28 +35,28 @@ Depending on which way you want to use for the compilation, please follow the re
 ### Using the CMake build system
 *[CMake](https://cmake.org)* is a cross-platform open-source family of tools designed to build, test and package software. The binaries for the latest version can be downloaded from [here](https://cmake.org/download/) for Linux, Mac OS X and Windows. 
 
-Some helpful OS and IDE-specific instructions follow.
+*Cmake* allows creating the Makefiles or project files for many IDEs, including Visual Studio, XCode, Eclipse and CodeBlocks among many others. We recommend using the GUI CMake tool for the first time making the project files. A bit outdated but otherwise nice tutorial on *CMake* can be found [here](https://www.johnlamp.net/cmake-tutorial.html). The [official documentation](https://cmake.org/documentation) provides more updated information.
 
-#### Ubuntu Linux
-As an alternative to installing the binaries from the website, you can run the following commands:
+For each Operating System and depending on your applications, there are faster ways to get the project running. For example, in Linux you can run the following commands to install *CMake* command-line tools:
 
 ```
 #!bash
+
 sudo apt-get update
 sudo apt-get install build-essential
 sudo apt-get install cmake
 ```
-Then go the `alpha-cpp` directory in command line and run the following commands to build the library:
+Then you change directory to `alpha-cpp` in command line and run the following to build the library:
 
 ```
 #!bash
+
 mkdir build
 cd build
 cmake ..
 make
 ```
-#### Microsoft Windows
-#### Mac OS
+This should work if the default *CMake* configuration is Makefile. The resulted executable will be a `main` file in the `build` folder.
 
 ### Using the compiler
 
@@ -68,7 +68,9 @@ make
 To run the main code:
 
 ```
-    ./sample PATH_TO_BAG_FILE (e.g. path/sample.bag)
+#!bash
+
+./main PATH_TO_BAG_FILE (e.g. path/sample.bag)
 ```
 
 ## Citation
