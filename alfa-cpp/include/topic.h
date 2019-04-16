@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 10, 2019
+*   Last Modified: April 16, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_TOPIC_H
@@ -25,6 +25,7 @@
 #include <fstream>
 #include <cstdio>
 #include <iomanip>
+#include <map>
 #include <algorithm>
 #include "commons.h"
 #include "message.h"
@@ -53,7 +54,26 @@ public:
     bool IsInitialized() const;
     bool IsFaultTopic();
     bool HasHeaderField();
+    int FindLabelIndex(const std::string &label);
     void Clear();
+
+    std::vector<DateTime> GetTimes(int start_msg_index = 0, int n_messages = -1);
+    std::vector<Message::HeaderType> GetHeaders(int start_msg_index = 0, int n_messages = -1);
+
+    std::vector<std::string> GetFieldsAsString(const std::string &field_label, int start_msg_index = 0, int n_messages = -1);
+    std::vector<std::string> GetFieldsAsString(int field_index, int start_msg_index = 0, int n_messages = -1);
+
+    std::vector<int> GetFieldsAsInt(const std::string &field_label, int start_msg_index = 0, int n_messages = -1);
+    std::vector<int> GetFieldsAsInt(int field_index, int start_msg_index = 0, int n_messages = -1);
+
+    std::vector<long long> GetFieldsAsLongLong(const std::string &field_label, int start_msg_index = 0, int n_messages = -1);
+    std::vector<long long> GetFieldsAsLongLong(int field_index, int start_msg_index = 0, int n_messages = -1);
+
+    std::vector<double> GetFieldsAsDouble(const std::string &field_label, int start_msg_index = 0, int n_messages = -1);
+    std::vector<double> GetFieldsAsDouble(int field_index, int start_msg_index = 0, int n_messages = -1);
+
+    std::vector<long double> GetFieldsAsLongDouble(const std::string &field_label, int start_msg_index = 0, int n_messages = -1);
+    std::vector<long double> GetFieldsAsLongDouble(int field_index, int start_msg_index = 0, int n_messages = -1);
 
 private:
     // Member Functions
@@ -61,6 +81,9 @@ private:
     void ProcessHeader();
 
     // Data Members
+
+    // Table of the message labels
+    std::map<std::string, int> labels_map;
 
     // Is the topic initialized or not
     bool is_initialized = false;
@@ -160,10 +183,8 @@ bool Topic::ReadFromFile(const std::string &filename)
 
     // It is not a fault topic if the topic name is shorter than the fault prefix
     if (this->Name.length() >= Commons::FaultTopicPrefix.length()) 
-    {
         // Check if the prefix of topic name is the fault prefix
         is_fault_topic = (this->Name.substr(0, Commons::FaultTopicPrefix.length()) == Commons::FaultTopicPrefix);
-    }
 
     // Initialization done
     is_initialized = true;
@@ -271,6 +292,314 @@ void Topic::Clear()
     len_fields.clear();
     orig_field_labels.clear();
     has_header = false;
+    labels_map.clear();
+}
+
+// Find the index of a given field label (case sensitive)
+int Topic::FindLabelIndex(const std::string &label)
+{
+    std::map<std::string, int>::iterator it = labels_map.find(label);
+
+    // Return -1 if not found
+    if (it == labels_map.end()) return -1;
+
+    return it->second;        
+}
+
+// Retrieve the DateTime of a desired number of messages starting from the desired index
+std::vector<DateTime> Topic::GetTimes(int start_msg_index, int n_messages)
+{
+    // Initialize the output
+    std::vector<DateTime> vec_output;
+
+    // Return if the start index is negative
+    if (start_msg_index < 0) return vec_output;
+
+    // If the number of messages is negative, use all the messages
+    if (n_messages < 0)
+        n_messages = Messages.size();
+
+    // Add the datetimes to the output vector
+    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+        vec_output.push_back(Messages[i].DateTime);
+
+    return vec_output;
+}
+
+// Retrieve the Header of a desired number of messages starting from the desired index
+std::vector<Message::HeaderType> Topic::GetHeaders(int start_msg_index, int n_messages)
+{
+    // Initialize the output
+    std::vector<Message::HeaderType> vec_output;
+
+    // Return if the start index is negative
+    if (start_msg_index < 0) return vec_output;
+
+    // If the number of messages is negative, use all the messages
+    if (n_messages < 0)
+        n_messages = Messages.size();
+
+    // Add the headers to the output vector
+    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+        vec_output.push_back(Messages[i].Header);
+
+    return vec_output;
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<std::string> Topic::GetFieldsAsString(int field_index, int start_msg_index, int n_messages)
+{
+    // Initialize the output
+    std::vector<std::string> vec_output;
+
+    // Print error if the field index is negative
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsString Error! Field index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // Print error if the start index is negative
+    if (start_msg_index < 0)
+    {
+        std::cerr << "GetFieldsAsString Error! Starting index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // If the number of messages is negative, use all the messages
+    if (n_messages < 0)
+        n_messages = Messages.size();
+
+    // Add the fields to the output vector
+    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+        vec_output.push_back(Messages[i].Fields[field_index]);
+
+    return vec_output;
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<std::string> Topic::GetFieldsAsString(const std::string &field_label, int start_msg_index, int n_messages)
+{
+    // Find the field index
+    int field_index = FindLabelIndex(field_label);
+
+    // Print error if the field name is not found
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsString Error! '" << field_label << "' field not found." << std::endl;
+        return std::vector<std::string>();
+    }
+
+    // Return the desired output
+    return GetFieldsAsString(field_index, start_msg_index, n_messages);
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<int> Topic::GetFieldsAsInt(int field_index, int start_msg_index, int n_messages)
+{
+    // Initialize the output
+    std::vector<int> vec_output;
+
+    // Print error if the field index is negative
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsInt Error! Field index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // Print error if the start index is negative
+    if (start_msg_index < 0)
+    {
+        std::cerr << "GetFieldsAsInt Error! Starting index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // If the number of messages is negative, use all the messages
+    if (n_messages < 0)
+        n_messages = Messages.size();
+
+    // Add the fields to the output vector
+    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    {
+        int temp = 0;
+        Commons::StringToInt(Messages[i].Fields[field_index], temp);
+        vec_output.push_back(temp);
+    }
+
+    return vec_output;
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<int> Topic::GetFieldsAsInt(const std::string &field_label, int start_msg_index, int n_messages)
+{
+    // Find the field index
+    int field_index = FindLabelIndex(field_label);
+
+    // Print error if the field name is not found
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsInt Error! '" << field_label << "' field not found." << std::endl;
+        return std::vector<int>();
+    }
+
+    // Return the desired output
+    return GetFieldsAsInt(field_index, start_msg_index, n_messages);
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<long long> Topic::GetFieldsAsLongLong(int field_index, int start_msg_index, int n_messages)
+{
+    // Initialize the output
+    std::vector<long long> vec_output;
+
+    // Print error if the field index is negative
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsLongLong Error! Field index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // Print error if the start index is negative
+    if (start_msg_index < 0)
+    {
+        std::cerr << "GetFieldsAsLongLong Error! Starting index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // If the number of messages is negative, use all the messages
+    if (n_messages < 0)
+        n_messages = Messages.size();
+
+    // Add the fields to the output vector
+    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    {
+        long long temp = 0;
+        Commons::StringToLongLong(Messages[i].Fields[field_index], temp);
+        vec_output.push_back(temp);
+    }
+
+    return vec_output;
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<long long> Topic::GetFieldsAsLongLong(const std::string &field_label, int start_msg_index, int n_messages)
+{
+    // Find the field index
+    int field_index = FindLabelIndex(field_label);
+
+    // Print error if the field name is not found
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsLongLong Error! '" << field_label << "' field not found." << std::endl;
+        return std::vector<long long>();
+    }
+
+    // Return the desired output
+    return GetFieldsAsLongLong(field_index, start_msg_index, n_messages);
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<double> Topic::GetFieldsAsDouble(int field_index, int start_msg_index, int n_messages)
+{
+    // Initialize the output
+    std::vector<double> vec_output;
+
+    // Print error if the field index is negative
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsDouble Error! Field index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // Print error if the start index is negative
+    if (start_msg_index < 0)
+    {
+        std::cerr << "GetFieldsAsDouble Error! Starting index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // If the number of messages is negative, use all the messages
+    if (n_messages < 0)
+        n_messages = Messages.size();
+
+    // Add the fields to the output vector
+    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    {
+        double temp = 0;
+        Commons::StringToDouble(Messages[i].Fields[field_index], temp);
+        vec_output.push_back(temp);
+    }
+
+    return vec_output;
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<double> Topic::GetFieldsAsDouble(const std::string &field_label, int start_msg_index, int n_messages)
+{
+    // Find the field index
+    int field_index = FindLabelIndex(field_label);
+
+    // Print error if the field name is not found
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsLongDouble Error! '" << field_label << "' field not found." << std::endl;
+        return std::vector<double>();
+    }
+
+    // Return the desired output
+    return GetFieldsAsDouble(field_index, start_msg_index, n_messages);
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<long double> Topic::GetFieldsAsLongDouble(int field_index, int start_msg_index, int n_messages)
+{
+    // Initialize the output
+    std::vector<long double> vec_output;
+
+    // Print error if the field index is negative
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsLongDouble Error! Field index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // Print error if the start index is negative
+    if (start_msg_index < 0)
+    {
+        std::cerr << "GetFieldsAsLongDouble Error! Starting index is negative." << std::endl;
+        return vec_output;
+    }
+
+    // If the number of messages is negative, use all the messages
+    if (n_messages < 0)
+        n_messages = Messages.size();
+
+    // Add the fields to the output vector
+    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    {
+        long double temp = 0;
+        Commons::StringToLongDouble(Messages[i].Fields[field_index], temp);
+        vec_output.push_back(temp);
+    }
+
+    return vec_output;
+}
+
+// Retrieve the fields of a desired number of messages starting from the desired index
+std::vector<long double> Topic::GetFieldsAsLongDouble(const std::string &field_label, int start_msg_index, int n_messages)
+{
+    // Find the field index
+    int field_index = FindLabelIndex(field_label);
+
+    // Print error if the field name is not found
+    if (field_index < 0)
+    {
+        std::cerr << "GetFieldsAsLongDouble Error! '" << field_label << "' field not found." << std::endl;
+        return std::vector<long double>();
+    }
+
+    // Return the desired output
+    return GetFieldsAsLongDouble(field_index, start_msg_index, n_messages);
 }
 
 /******************************************************************************/
@@ -321,11 +650,15 @@ void Topic::ProcessHeader()
             continue;
         }
 
+
+        std::string new_field_label = orig_field_labels[i];
         // Remove the starting prefix if the label starts with it
         if (orig_field_labels[i].substr(0, Commons::CSVFieldsPrefix.size()) == Commons::CSVFieldsPrefix)
-            FieldLabels.push_back(orig_field_labels[i].substr(Commons::CSVFieldsPrefix.size()));
-        else
-            FieldLabels.push_back(orig_field_labels[i]);
+            new_field_label = orig_field_labels[i].substr(Commons::CSVFieldsPrefix.size());
+
+        // Add the label to the label table and the vector
+        FieldLabels.push_back(new_field_label);
+        this->labels_map.insert(std::make_pair(new_field_label, FieldLabels.size() - 1));
     }
 
     // Update the minimum spaces needed for printing each field

@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 10, 2019
+*   Last Modified: April 16, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_Commons_H
@@ -59,6 +59,8 @@ namespace alfa
 		static bool StringToInt(const std::string &str, int &out_number);
 		static bool StringToLong(const std::string &str, long &out_number);
 		static bool StringToLongLong(const std::string &str, long long &out_number);
+		static bool StringToDouble(const std::string &str, double &out_number);
+		static bool StringToLongDouble(const std::string &str, long double &out_number);
 		static VecString GetFileList(const std::string &dir_path);
 		static VecString FilterFileList(const VecString &file_list, const std::string &extension, const bool remove_extension = false);
 		static bool ExtractFilenameAndExtension(const std::string &file_path, std::string &out_filename, std::string &out_extension, std::string &out_directory);
@@ -117,7 +119,7 @@ namespace alfa
 		return true;
 	}
 
-	// Convert a string to an integer type. Returns false if the string is not exactly an integer.
+	// Convert a string to an integer. Returns false if the string is not exactly an integer.
 	bool Commons::StringToInt(const std::string &str, int &out_number)
 	{
 		// Convert to long long integer first
@@ -129,11 +131,37 @@ namespace alfa
 		return true;
 	}
 
-	// Convert a string to a long long type. Returns false if the string is not exactly a long long integer.
+	// Convert a string to a long long integer. Returns false if the string is not exactly a long long integer.
 	bool Commons::StringToLongLong(const std::string &str, long long &out_number)
 	{
 		char *endptr;
 		long long value = std::strtoll(str.c_str(), &endptr, 10);
+
+		// If the conversion is not successful
+		if (*endptr != '\0') return false;
+
+		// Otherwise, set the output variable
+		out_number = value;
+		return true;
+	}
+
+	// Convert a string to a double. Returns false if the string is not exactly a double.
+	bool Commons::StringToDouble(const std::string &str, double &out_number)
+	{
+		// Convert to long double first
+		long double temp;
+		if (!StringToLongDouble(str, temp)) return false;
+
+		// If successfull, convert to double
+		out_number = (double)temp;
+		return true;
+	}
+
+	// Convert a string to a long double. Returns false if the string is not exactly a long double.
+	bool Commons::StringToLongDouble(const std::string &str, long double &out_number)
+	{
+		char *endptr;
+		long long value = std::strtold(str.c_str(), &endptr);
 
 		// If the conversion is not successful
 		if (*endptr != '\0') return false;

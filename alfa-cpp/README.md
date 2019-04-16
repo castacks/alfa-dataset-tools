@@ -8,7 +8,7 @@ For more information about the dataset and the tools for the other programming l
 
 ## Description of the files
 
-In addition to this README file, the files in this project are:
+In addition to this *README.md* file, the files in this project are:
 
 - *src/main.cpp*: An example file showing some of the capablities of the library. It is suggested that you start from here to learn how to load a sequence and work with the dataset.
 

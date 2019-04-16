@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 10, 2019
+*   Last Modified: April 16, 2019
 *   ***************************************************************************/
 
 #ifndef ALFA_SEQUENCE_H
@@ -66,7 +66,7 @@ public:
     double GetTotalDuration();
     double GetNormalFlightDuration();
     int FindFirstFaultMessage();
-    int FindTopicIndex(std::string topic_name);
+    int FindTopicIndex(const std::string &topic_name);
 
 private:
     // Data Members
@@ -235,7 +235,7 @@ int Sequence::FindFirstFaultMessage()
 }
 
 // Find the index of a given topic (case sensitive)
-int Sequence::FindTopicIndex(std::string topic_name)
+int Sequence::FindTopicIndex(const std::string &topic_name)
 {
     std::map<std::string, int>::iterator it = topic_map.find(topic_name);
 

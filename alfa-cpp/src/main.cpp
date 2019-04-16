@@ -13,7 +13,7 @@
 *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 *   Contact: keipour@cmu.edu
 *
-*   Last Modified: April 10, 2019
+*   Last Modified: April 16, 2019
 *   ***************************************************************************/
 
 #include <iostream>
@@ -33,6 +33,10 @@ int main(int argc, char** argv)
     
     // Exit if the command line is not properly formatted
     if (!parsed) return 0;
+
+    // Print a message about the project
+    PrintProjectInfo();
+    std::cout << std::endl;
 
     // Read the sequence from the given directory 
     alfa::Sequence sequence(sequenceDir, sequenceName);
@@ -72,9 +76,11 @@ int main(int argc, char** argv)
     sequence.Topics[fault_topic_idx].Print(0, 1);
     std::cout << std::endl;
 
-    // Print a message about the project
-    PrintProjectInfo();
-    std::cout << std::endl;
+    // Retrieve the measured rolls (10 first messages)
+    int rolltopic_idx = sequence.FindTopicIndex("mavros-nav_info-roll");
+    auto rolls = sequence.Topics[rolltopic_idx].GetFieldsAsDouble("measured", 0, 10);
+    // for (int i = 0; i < (int)rolls.size(); ++i)
+    //     std::cout << "Roll " << i << ": " << 
 
     return 0;
 }
@@ -123,6 +129,7 @@ void PrintProjectInfo()
 {
     std::cout << "************************************************************************" << std::endl; 
     std::cout << "* Thank you for using the ALFA dataset!                                *" << std::endl;
+    std::cout << "* The following is an example of using the provided alpha-cpp code.    *" << std::endl;
     std::cout << "* Please contact us about any questions or to report any bugs.         *" << std::endl;
     std::cout << "************************************************************************" << std::endl; 
     std::cout << "* For more information about the dataset, please refer to:             *" << std::endl;
