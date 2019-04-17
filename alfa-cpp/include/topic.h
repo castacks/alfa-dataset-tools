@@ -320,7 +320,7 @@ std::vector<DateTime> Topic::GetTimes(int start_msg_index, int n_messages)
         n_messages = Messages.size();
 
     // Add the datetimes to the output vector
-    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    for (int i = start_msg_index; (i < start_msg_index + n_messages) && (i < (int)Messages.size()); ++i)
         vec_output.push_back(Messages[i].DateTime);
 
     return vec_output;
@@ -340,7 +340,7 @@ std::vector<Message::HeaderType> Topic::GetHeaders(int start_msg_index, int n_me
         n_messages = Messages.size();
 
     // Add the headers to the output vector
-    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    for (int i = start_msg_index; (i < start_msg_index + n_messages) && (i < (int)Messages.size()); ++i)
         vec_output.push_back(Messages[i].Header);
 
     return vec_output;
@@ -371,7 +371,7 @@ std::vector<std::string> Topic::GetFieldsAsString(int field_index, int start_msg
         n_messages = Messages.size();
 
     // Add the fields to the output vector
-    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    for (int i = start_msg_index; (i < start_msg_index + n_messages) && (i < (int)Messages.size()); ++i)
         vec_output.push_back(Messages[i].Fields[field_index]);
 
     return vec_output;
@@ -419,7 +419,7 @@ std::vector<int> Topic::GetFieldsAsInt(int field_index, int start_msg_index, int
         n_messages = Messages.size();
 
     // Add the fields to the output vector
-    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    for (int i = start_msg_index; (i < start_msg_index + n_messages) && (i < (int)Messages.size()); ++i)
     {
         int temp = 0;
         Commons::StringToInt(Messages[i].Fields[field_index], temp);
@@ -471,7 +471,7 @@ std::vector<long long> Topic::GetFieldsAsLongLong(int field_index, int start_msg
         n_messages = Messages.size();
 
     // Add the fields to the output vector
-    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    for (int i = start_msg_index; (i < start_msg_index + n_messages) && (i < (int)Messages.size()); ++i)
     {
         long long temp = 0;
         Commons::StringToLongLong(Messages[i].Fields[field_index], temp);
@@ -523,7 +523,7 @@ std::vector<double> Topic::GetFieldsAsDouble(int field_index, int start_msg_inde
         n_messages = Messages.size();
 
     // Add the fields to the output vector
-    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    for (int i = start_msg_index; (i < start_msg_index + n_messages) && (i < (int)Messages.size()); ++i)
     {
         double temp = 0;
         Commons::StringToDouble(Messages[i].Fields[field_index], temp);
@@ -575,7 +575,7 @@ std::vector<long double> Topic::GetFieldsAsLongDouble(int field_index, int start
         n_messages = Messages.size();
 
     // Add the fields to the output vector
-    for (int i = start_msg_index; i < (int)Messages.size(); ++i)
+    for (int i = start_msg_index; (i < start_msg_index + n_messages) && (i < (int)Messages.size()); ++i)
     {
         long double temp = 0;
         Commons::StringToLongDouble(Messages[i].Fields[field_index], temp);

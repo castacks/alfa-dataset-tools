@@ -161,7 +161,7 @@ namespace alfa
 	bool Commons::StringToLongDouble(const std::string &str, long double &out_number)
 	{
 		char *endptr;
-		long long value = std::strtold(str.c_str(), &endptr);
+		long double value = std::strtold(str.c_str(), &endptr);
 
 		// If the conversion is not successful
 		if (*endptr != '\0') return false;

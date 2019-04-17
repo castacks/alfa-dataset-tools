@@ -76,11 +76,15 @@ int main(int argc, char** argv)
     sequence.Topics[fault_topic_idx].Print(0, 1);
     std::cout << std::endl;
 
-    // Retrieve the measured rolls (10 first messages)
+    // Retrieve the commanded rolls and its times from 'mavros-nav_info-roll' topic (15 first messages)
     int rolltopic_idx = sequence.FindTopicIndex("mavros-nav_info-roll");
-    auto rolls = sequence.Topics[rolltopic_idx].GetFieldsAsDouble("measured", 0, 10);
-    // for (int i = 0; i < (int)rolls.size(); ++i)
-    //     std::cout << "Roll " << i << ": " << 
+    auto rolls = sequence.Topics[rolltopic_idx].GetFieldsAsDouble("commanded", 0, 15);
+    auto roll_times = sequence.Topics[rolltopic_idx].GetTimes(0, 15);
+    for (int i = 0; i < (int)rolls.size(); ++i)
+        std::cout << std::setw(2) << i << " | Time: " << roll_times[i] << 
+            " | Commanded Roll " << ": " << std::fixed << std::setprecision(10) << rolls[i] << std::endl;
+
+    std::cout << std::endl;
 
     return 0;
 }
