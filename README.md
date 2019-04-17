@@ -64,6 +64,7 @@ A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “Automatic Real-time Anomaly De
 
 * **Azarakhsh Keipour** - (keipour [at] cmu [dot] edu)
 * **Mohammadreza Mousaei** - [mmousaei](https://github.com/mmousaei)
+* **Sebastian Scherer** - (basti [at] cmu [dot] edu)
 
 ## License
 

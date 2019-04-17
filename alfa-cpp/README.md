@@ -4,7 +4,7 @@
 
 This directory contains the basic code written in C++'11 language to work with the AIR Lab Fault Detection (ALFA) Dataset. The code is cross-platform and has been tested on Linux, OSX and Windows platforms with the most common compilers (GCC, MSVC, Clang).
 
-For more information about the dataset and the tools for the other programming languages, please refer to the README file provided in the parent folder of this repository.
+For more information about the dataset and the tools for the other programming languages, please refer to the *README.md* file provided in the parent folder of this repository.
 
 ## Description of the files
 
@@ -59,60 +59,45 @@ make
 This should work if the default *CMake* configuration is Makefile. The resulted executable will be a `main` file in the `build` folder.
 
 ### Using the compiler
+As mentioned above, *CMake* tool is very simple and helpful for making a project for your favorite IDE or Make system (Visual Studio, Makefile, etc.). An alternative is to compile the project directly to build the executable file. Depending on the choice of the compiler, the commands for compiling will be very different. However, once you learn the necessary commands, the process is not necessarily hard. Just remember that the code is written in C++'11 and the compiler should be aware of this.
 
-#### Ubuntu Linux
-#### Microsoft Windows
-#### Mac OS
-
-## Running the code
-To run the main code:
+An example command for compiling the code in Ubuntu Linux using the GNU C++ Compiler (g++) is:
 
 ```
 #!bash
 
-./main PATH_TO_BAG_FILE (e.g. path/sample.bag)
+g++ -std=c++11 -I./include ./src/main.cpp -o ./main
+```
+
+You should run this command from the `alpha-cpp` directory. If you are getting an error about g++ command not being available, you would need to install the `build-essential` package.
+
+```
+#!bash
+
+sudo apt-get update
+sudo apt-get install build-essential
+```
+
+## Running the code
+The executable file generated from the previous step is `main` in Linux/UNIX and Mac OS, and `main.exe` in Windows. To run the executable, change your current directory to the one containing the executable file. You need to pass the path to the desired `.bag` file containging the sequence as an argument. 
+
+For example, in Ubuntu Linux, assuming that your executable is in `~/alpha-dataset-tools/alpha-cpp/build` and your desired sequence is in `~/alpha-dataset/processed/my_sequence/my_sequence.bag`. Then the commands will be:
+
+```
+#!bash
+
+cd ~/alpha-dataset-tools/alpha-cpp/build
+./main ~/alpha-dataset/processed/my_sequence/my_sequence.bag
 ```
 
 ## Citation
-
-### Tools and Dataset
-The tools and the dataset are provided with the following paper. Please cite the following publicarion if you use either the tools or the dataset:
-
-**BibTeX:** \
-@article{keipour:dataset:2019, \
-author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
-title={ALFA: A Dataset for UAV Fault and Anomaly Detection}, \
-journal = {The International Journal of Robotics Research}, \
-volume = {}, \
-number = {}, \
-pages = {}, \
-year = {In press}, \
-}
-
-**IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “ALFA:  A  dataset  for  UAV fault  and  anomaly  detection,” *The  International  Journal of  Robotics Research*, In press.
-
-### Portions of Dataset
-Some portions of the dataset are released in the following publication. If you use any of those sequences, please also cite this paper:
-
-**BibTeX:** \
-@inproceedings{keipour:detection:2019, \
-author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
-booktitle={2019 IEEE International Conference on Robotics and Automation (ICRA)}, \
-title={Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles}, \
-year={2019}, \
-month={May}, \
-pages={forthcoming} \
-}
-
-**IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles,” in *2019 IEEE International Conference on Robotics and Automation (ICRA)*, May 2019, forthcoming.
-
+The tools and the dataset are provided with a publication. Please refer to the *README.md* file provided in the parent folder of this repository.
 
 ## Authors
 
 * **Azarakhsh Keipour** - (keipour [at] cmu [dot] edu)
 * **Mohammadreza Mousaei** - [mmousaei](https://github.com/mmousaei)
+* **Sebastian Scherer** - (basti [at] cmu [dot] edu)
 
 ## License
 
