@@ -622,7 +622,7 @@ Message Topic::TokensToMessage(const VecString &tokens)
     len_frameid = std::max(len_frameid, l_frid);
     for (int i = 0; i < (int)l_fields.size(); ++i)
     {
-        if (i == len_fields.size())
+        if (i == (int)len_fields.size())
             len_fields.push_back(l_fields[i]);
         else
             len_fields[i] = std::max(len_fields[i], l_fields[i]);

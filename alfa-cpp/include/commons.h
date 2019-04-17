@@ -228,7 +228,7 @@ namespace alfa
 			out_filename = file_path.substr(0, ext_pos);
 
 			// Find the filename position
-			int file_pos = out_filename.find_last_of(FilePathSeparator);
+			std::size_t file_pos = out_filename.find_last_of(FilePathSeparator);
 			if (file_pos == std::string::npos) file_pos = -1;
 
 			// Extract the file name

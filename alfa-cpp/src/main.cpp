@@ -62,7 +62,6 @@ int main(int argc, char** argv)
     for (int i = 0; (i < 10) && (i < (int)sequence.MessageIndexList.size()); ++i)
     {
         int topic_idx = sequence.MessageIndexList[i].TopicIdx;
-        int message_idx = sequence.MessageIndexList[i].MessageIdx;
         std::cout << std::setw(2) << i << " | Time: " << sequence.GetMessage(i).DateTime <<
             " | Topic: " << sequence.Topics[topic_idx].Name << std::endl;
     }
