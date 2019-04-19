@@ -41,6 +41,9 @@ int main(int argc, char** argv)
     // Read the sequence from the given directory 
     alfa::Sequence sequence(sequenceDir, sequenceName);
 
+    // Check if loading the sequence failed
+    if (!sequence.IsInitialized()) return 0;
+
     // Print some information about the sequence
     sequence.PrintBriefInfo();
     std::cout << std::endl;
