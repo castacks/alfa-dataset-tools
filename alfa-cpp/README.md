@@ -13,7 +13,7 @@ In addition to this *README.md* file, the files in this project are:
 - *src/main.cpp*: An example file showing some of the capablities of the library. It is suggested that you start from here to learn how to load a sequence and work with the dataset.
 
 - *include/sequence.h*: A header file that defines a container class for a sequence. Each sequence is a collection of topics and each topic is a collection of messages. This header allows to load the whole sequence from the disk, go over topics, find a topic, iterate through all the messages in the sequence based on their time, etc. 
-Additionally, it provides some useful information, such as the sequence duration, the flight time before error happened, and error information. 
+Additionally, it provides some useful information, such as the sequence duration, the flight time before the fault happened, and the fault information.
 
 - *include/topic.h*: A header file that defines a container class for a topic. Each topic is a collection of messages. This header allows to load a topic from the disk, go over the messages, checking the type of the topic (fault ground truth topic), printing the messages with their field labels, etc.
 

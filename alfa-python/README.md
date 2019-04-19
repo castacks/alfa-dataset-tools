@@ -1,6 +1,4 @@
-# ALFA Dataset Tools
-
-This repository is still under development...
+# ALFA Dataset Python Tools
 
 ## Introduction
 
@@ -8,7 +6,7 @@ This directory contains the basic wrapper code written in C++'11 language to wra
 
 For more information about the dataset and the tools for the other programming languages, please refer to the *README.md* file provided in the parent folder of this repository.
 
-For more information about the source code structure please refer to the *README.md* provided in alfa-cpp folder.
+For more information about the source code structure please refer to the *README.md* provided in the `alfa-cpp` folder.
 
 ## Building the code
 

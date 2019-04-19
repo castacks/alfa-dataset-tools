@@ -1,69 +1,30 @@
-# ALFA Dataset Tools
-
-This repository is still under development...
+# ALFA Dataset MATLAB Tools
 
 ## Introduction
 
-This repository contains the basic tools to work with the AIR Lab Fault Detection (ALFA) Dataset. This dataset contains autonomous flight sequences of a UAV plane with eight different types of fault happening during the flights and is provided to help advance fault and anomaly detection and isolation research. 
+This directory contains the basic code written in MATLAB language to work with the AIR Lab Fault Detection (ALFA) Dataset. The code is cross-platform and has been tested on Linux, OSX and Windows platforms.
 
-For more information about the dataset, please refer to [http://theairlab.org/alfa-dataset](http://theairlab.org/alfa-dataset).
+For more information about the dataset and the tools for the other programming languages, please refer to the *README.md* file provided in the parent folder of this repository.
 
-For more information about this project and the publications related to the dataset and this work, please refer to [http://theairlab.org/fault-detection-project](http://theairlab.org/fault-detection-project).
+## Description of the files
 
-## Description of Tools
+In addition to this *README.md* file, the files in this project are:
 
-These tool packages are provided for reading and working with the dataset:
+- *main.m*: An example file showing some of the capablities of the library. It is suggested that you start from here to learn how to load a sequence and work with the dataset.
 
-- *alfa-cpp*: The tools to read, filter and iterate through the sequences in C++'11 language.
+- *alfa.m*: A file that defines a number of useful functions to work with the sequences, including loading the sequence, retrieving the messages, getting some useful information such as the sequence duration, the flight time before the fault happened, and the fault information. 
 
-- *alfa-python*: The tools to read, filter and iterate through the sequences in Python 3.x language.
-
-- *alfa-matlab*: The tools to read, filter and iterate through the sequences in MATLAB development environment.
-
-- *alfa-evaluate*: The tools for evaluation of new methods with the provided dataset. The code is written in C++'11 language, but examples are provided in C++'11, Python 3.x and MATLAB on how to evaluate the methods in those languages using these tools. 
-
-For more information, please refer to each package about how to install and use them.
+## Running the code
+Change the `filename` in the `main.m` file to the desired sequence `.mat` file. Then running the code should show some information about the sequence and its topics.
 
 ## Citation
-
-### Tools and Dataset
-The tools and the dataset are provided with the following paper. Please cite the following publicarion if you use either the tools or the dataset:
-
-**BibTeX:** \
-@article{keipour:dataset:2019, \
-author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
-title={ALFA: A Dataset for UAV Fault and Anomaly Detection}, \
-journal = {The International Journal of Robotics Research}, \
-volume = {}, \
-number = {}, \
-pages = {}, \
-year = {In press}, \
-}
-
-**IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “ALFA:  A  dataset  for  UAV fault  and  anomaly  detection,” *The  International  Journal of  Robotics Research*, In press.
-
-### Portions of Dataset
-Some portions of the dataset are released in the following publication. If you use any of those sequences, please also cite this paper:
-
-**BibTeX:** \
-@inproceedings{keipour:detection:2019, \
-author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
-booktitle={2019 IEEE International Conference on Robotics and Automation (ICRA)}, \
-title={Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles}, \
-year={2019}, \
-month={May}, \
-pages={forthcoming} \
-}
-
-**IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles,” in *2019 IEEE International Conference on Robotics and Automation (ICRA)*, May 2019, forthcoming.
-
+The tools and the dataset are provided with a publication. Please refer to the *README.md* file provided in the parent folder of this repository.
 
 ## Authors
 
 * **Azarakhsh Keipour** - (keipour [at] cmu [dot] edu)
-* **Mohammadreza Mousaei** - [mmousaei](https://github.com/mmousaei)
+* **Mohammadreza Mousaei** - (mmousaei [at] cmu [dot] edu)
+* **Sebastian Scherer** - (basti [at] cmu [dot] edu)
 
 ## License
 
