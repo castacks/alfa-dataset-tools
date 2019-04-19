@@ -96,7 +96,7 @@ The tools and the dataset are provided with a publication. Please refer to the *
 ## Authors
 
 * **Azarakhsh Keipour** - (keipour [at] cmu [dot] edu)
-* **Mohammadreza Mousaei** - [mmousaei](https://github.com/mmousaei)
+* **Mohammadreza Mousaei** - (mmousaei [at] cmu [dot] edu)
 * **Sebastian Scherer** - (basti [at] cmu [dot] edu)
 
 ## License
