@@ -4,66 +4,57 @@ This repository is still under development...
 
 ## Introduction
 
-This repository contains the basic tools to work with the AIR Lab Fault Detection (ALFA) Dataset. This dataset contains autonomous flight sequences of a UAV plane with eight different types of fault happening during the flights and is provided to help advance fault and anomaly detection and isolation research. 
+This directory contains the basic wrapper code written in C++'11 language to wrap our C++ Classes in Python and expose Classes and Methods to be able to with them in Python. The code is cross-platform and has been tested on Linux, OSX and Windows platforms with the most common compilers (GCC, MSVC, Clang).
 
-For more information about the dataset, please refer to [http://theairlab.org/alfa-dataset](http://theairlab.org/alfa-dataset).
+For more information about the dataset and the tools for the other programming languages, please refer to the *README.md* file provided in the parent folder of this repository.
 
-For more information about this project and the publications related to the dataset and this work, please refer to [http://theairlab.org/fault-detection-project](http://theairlab.org/fault-detection-project).
+For more information about the source code structure please refer to the *README.md* provided in alfa-cpp folder.
 
-## Description of Tools
+## Building the code
 
-These tool packages are provided for reading and working with the dataset:
+We used *CMake* to build the python wrapper files. In order to build python wrapper files:
 
-- *alfa-cpp*: The tools to read, filter and iterate through the sequences in C++'11 language.
+1. install *CMake* command-line tools:
 
-- *alfa-python*: The tools to read, filter and iterate through the sequences in Python 3.x language.
+```
+#!bash
 
-- *alfa-matlab*: The tools to read, filter and iterate through the sequences in MATLAB development environment.
+sudo apt-get update
+sudo apt-get install build-essential
+sudo apt-get install cmake
+```
+2. Then you change directory to `alpha-cpp` in command line and run the following to build the library:
 
-- *alfa-evaluate*: The tools for evaluation of new methods with the provided dataset. The code is written in C++'11 language, but examples are provided in C++'11, Python 3.x and MATLAB on how to evaluate the methods in those languages using these tools. 
+```
+#!bash
+cd alfa-dataset-tools/alfa-python
+mkdir build
+cd build
+cmake ..
+make
+```
+This should work if the default *CMake* configuration is Makefile. The resulted executable will be a `main` file in the `build` folder.
 
-For more information, please refer to each package about how to install and use them.
+## Using the wrapper in Python
+
+To use wrapped classes in Python, copy compiled file *alfa_python.so* (in your build directory) where you wanna use it in python. Then import the classes in your python code. ex:
+
+```
+from alfa_python import Sequence
+from alfa_python import Commons
+```
+
+Then you will have access to all corresponding methods and data members of these classes in python.
+
 
 ## Citation
-
-### Tools and Dataset
-The tools and the dataset are provided with the following paper. Please cite the following publicarion if you use either the tools or the dataset:
-
-**BibTeX:** \
-@article{keipour:dataset:2019, \
-author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
-title={ALFA: A Dataset for UAV Fault and Anomaly Detection}, \
-journal = {The International Journal of Robotics Research}, \
-volume = {}, \
-number = {}, \
-pages = {}, \
-year = {In press}, \
-}
-
-**IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “ALFA:  A  dataset  for  UAV fault  and  anomaly  detection,” *The  International  Journal of  Robotics Research*, In press.
-
-### Portions of Dataset
-Some portions of the dataset are released in the following publication. If you use any of those sequences, please also cite this paper:
-
-**BibTeX:** \
-@inproceedings{keipour:detection:2019, \
-author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
-booktitle={2019 IEEE International Conference on Robotics and Automation (ICRA)}, \
-title={Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles}, \
-year={2019}, \
-month={May}, \
-pages={forthcoming} \
-}
-
-**IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles,” in *2019 IEEE International Conference on Robotics and Automation (ICRA)*, May 2019, forthcoming.
-
+The tools and the dataset are provided with a publication. Please refer to the *README.md* file provided in the parent folder of this repository.
 
 ## Authors
 
 * **Azarakhsh Keipour** - (keipour [at] cmu [dot] edu)
 * **Mohammadreza Mousaei** - [mmousaei](https://github.com/mmousaei)
+* **Sebastian Scherer** - (basti [at] cmu [dot] edu)
 
 ## License
 
