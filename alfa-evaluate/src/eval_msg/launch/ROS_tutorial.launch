@@ -1,0 +1,7 @@
+<launch>
+
+ 	<node name="subscriberNode" pkg="subscriber" type="subscriberNode"/>
+ 	<!-- <node name="publisherNode" pkg="publisher" type="publisherNode"/> -->
+	<include file="$(find publisher)/launch/publisher.launch"/>
+
+</launch>

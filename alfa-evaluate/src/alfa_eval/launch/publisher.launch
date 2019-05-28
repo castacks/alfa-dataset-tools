@@ -1,0 +1,5 @@
+<launch>
+
+ 	<node name="publisherNode" pkg="publisher" type="publisherNode"/>
+
+</launch>
