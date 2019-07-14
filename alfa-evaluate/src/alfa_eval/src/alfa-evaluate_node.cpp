@@ -15,6 +15,12 @@
 *   Contact: keipour@cmu.edu
 *
 *   Last Modified: May 19, 2019
+*
+*   Copyright (c) 2019 Carnegie Mellon University,
+*   Azarakhsh Keipour <keipour@cmu.edu>
+*
+*   For License information please see the README file in the root directory.
+*
 *   ***************************************************************************/
 #include "ros/ros.h"
 #include "std_msgs/String.h"

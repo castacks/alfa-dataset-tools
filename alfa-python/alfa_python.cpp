@@ -1,3 +1,26 @@
+/*  ***************************************************************************
+ *   alpha_python.cpp - Demonstrates the usage of ALFA libraries and dataset.
+ *
+ *   For more information about the dataset, please refer to:
+ *   http://theairlab.org/alfa-dataset
+ *
+ *   For more information about this project and the publications related to
+ *   the dataset and this work, please refer to:
+ *   http://theairlab.org/fault-detection-project
+ *
+ *   Air Lab, Robotics Institute, Carnegie Mellon University
+ *
+ *   Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
+ *   Contact: keipour@cmu.edu
+ *
+ *   Last Modified: April 16, 2019
+ *
+ *   Copyright (c) 2019 Carnegie Mellon University,
+ *   Azarakhsh Keipour <keipour@cmu.edu>
+ *
+ *   For License information please see the README file in the root directory.
+ *
+ *   ***************************************************************************/
 #include <boost/python.hpp>
 #include <boost/python/numpy.hpp>
 #include <iostream>

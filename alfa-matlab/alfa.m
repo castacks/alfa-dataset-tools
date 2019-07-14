@@ -14,6 +14,12 @@
 % Contact: keipour@cmu.edu
 %
 % Last Modified: April 19, 2019
+%
+% Copyright (c) 2019 Carnegie Mellon University,
+% Azarakhsh Keipour <keipour@cmu.edu>
+%
+% For License information please see the README file in the root directory.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 classdef alfa

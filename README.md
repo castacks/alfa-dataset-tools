@@ -22,7 +22,7 @@ These tool packages are provided for reading and working with the dataset:
 
 - *alfa-evaluate*: The tools for evaluation of new methods with the provided dataset. The code is written in C++'11 language, but examples are provided in C++'11, Python 3.x and MATLAB on how to evaluate the methods in those languages using these tools. 
 
-For more information, please refer to each package about how to install and use them.
+For more information, please refer to each individual package about how to install and use them.
 
 ## Citation
 
@@ -67,7 +67,20 @@ A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “Automatic Real-time Anomaly De
 * **Sebastian Scherer** - (basti [at] cmu [dot] edu)
 
 ## License
+[This software is BSD licensed.](http://opensource.org/licenses/BSD-3-Clause)
 
+Copyright (c) 2019, Carnegie Mellon University
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Acknowledgments
 
