@@ -27,7 +27,7 @@ For more information, please refer to each individual package about how to insta
 ## Citation
 
 ### Tools and Dataset
-The tools and the dataset are provided with the following paper. Please cite the following publicarion if you use either the tools or the dataset:
+The tools and the dataset are provided with the following paper ([available on arXiv](https://arxiv.org/abs/1907.06268)). Please cite the following publicarion if you use either the tools or the dataset:
 
 **BibTeX:** \
 @article{keipour:dataset:2019, \
@@ -44,7 +44,7 @@ year = {In press}, \
 A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “ALFA:  A  dataset  for  UAV fault  and  anomaly  detection,” *The  International  Journal of  Robotics Research*, In press.
 
 ### Portions of Dataset
-Some portions of the dataset are released in the following publication. If you use any of those sequences, please also cite this paper:
+Some portions of the dataset are released in the following publication ([available on arXiv](https://arxiv.org/abs/1907.00511)). If you use any of those sequences, please also cite this paper:
 
 **BibTeX:** \
 @inproceedings{keipour:detection:2019, \
