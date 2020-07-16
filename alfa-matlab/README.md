@@ -12,7 +12,11 @@ In addition to this *README.md* file, the files in this project are:
 
 - *main.m*: An example file showing some of the capablities of the library. It is suggested that you start from here to learn how to load a sequence and work with the dataset.
 
-- *alfa.m*: A file that defines a number of useful functions to work with the sequences, including loading the sequence, retrieving the messages, getting some useful information such as the sequence duration, the flight time before the fault happened, and the fault information. 
+- *alfa-tools/sequence.m*: A class that defines a number of useful functions to work with the sequences, including loading the sequence, retrieving the messages, getting some useful information such as the sequence duration, the flight time before the fault happened, and the fault information. 
+
+- *alfa-tools/topic.m*: A class that contains the topic information. 
+
+- *alfa-tools/data_field.m*: A class that contains the message information. 
 
 ## Running the code
 Change the `filename` in the `main.m` file to the desired sequence `.mat` file. Then running the code should show some information about the sequence and its topics.
