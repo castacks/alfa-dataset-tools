@@ -13,9 +13,9 @@
 % Authors: Azarakhsh Keipour, Mohammadreza Mousaei, Sebastian Scherer
 % Contact: keipour@cmu.edu
 %
-% Last Modified: April 19, 2019
+% Last Modified: July 16, 2020
 %
-% Copyright (c) 2019 Carnegie Mellon University,
+% Copyright (c) 2020 Carnegie Mellon University,
 % Azarakhsh Keipour <keipour@cmu.edu>
 %
 % For License information please see the README file in the root directory.
@@ -24,11 +24,32 @@
 
 %% Input .mat file
 % Please change the path to a sequence .mat file from the dataset
+filename = '/home/azarakhsh/rosbags/processed/carbonZ_2018-07-18-15-53-31_1_engine_failure/carbonZ_2018-07-18-15-53-31_1_engine_failure.mat';
 
-filename = '/home/azarakhsh/rosbags/processed/carbonZ_2018-07-18-12-10-11_no_ground_truth/carbonZ_2018-07-18-12-10-11_no_ground_truth.mat';
+%% Add the dataset tools library to the path
+addpath('alfa-tools');
 
-%% Load the sequence
-Sequence = alfa.LoadSequence(filename);
+%% Load the sequence 
+% Two ways to do load a sequence:
+% 1 - Through the constructor:
+Sequence = sequence(filename);
+% 2- Loading after defining the object
+% Sequence = sequence;
+% Sequence.LoadSequence(filename);
 
-%% Print the duration of the flight
-disp(alfa.GetSequenceDuration(Sequence));
+%% Print brief information about the sequence
+Sequence.PrintBriefInfo();
+
+%% Plot the commanded vs. measured roll as an example
+% Get the topic for the roll
+roll_topic = Sequence.GetTopicByName('mavros_nav_info_roll');
+% Get the start time to normalize times to start from zero
+start_time = Sequence.GetStartTime();
+% Normalize the time stamps in the topic
+times = roll_topic.Data.time_recv - start_time;
+% Plot the data
+figure;
+plot(times, roll_topic.Data.measured);
+hold on; grid on;
+plot(times, roll_topic.Data.commanded);
+hold off
