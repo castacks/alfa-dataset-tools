@@ -1,7 +1,5 @@
 # ALFA Dataset Tools
 
-This repository is still under development...
-
 ## Introduction
 
 This repository contains the basic tools to work with the AIR Lab Fault Detection (ALFA) Dataset. ALFA dataset contains autonomous flight sequences of a UAV plane with eight different types of fault happening during the flights and is provided to help advance fault and anomaly detection and isolation research. 
@@ -22,6 +20,8 @@ These tool packages are provided for reading and working with the dataset:
 
 - *alfa-evaluate*: The tools for evaluation of new methods with the provided dataset. The code is written in C++'11 language, but examples are provided in C++'11, Python 3.x and MATLAB on how to evaluate the methods in those languages using these tools. 
 
+- *alfa-ros-messages*: The custom ROS message definitions for topics in the `bag` files. The message definitions are only provided for working with the `bag` files and are not required for other dataset file types.
+
 For more information, please refer to each individual package about how to install and use them.
 
 ## Citation
@@ -30,7 +30,7 @@ For more information, please refer to each individual package about how to insta
 The tools and the dataset are provided with the following paper ([available on arXiv](https://arxiv.org/abs/1907.06268)). Please cite the following publicarion if you use either the tools or the dataset:
 
 **BibTeX:** \
-@article{keipour:dataset:2019, \
+@article{keipour:dataset:2020, \
 author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
 title={ALFA: A Dataset for UAV Fault and Anomaly Detection}, \
 journal = {The International Journal of Robotics Research}, \
@@ -53,12 +53,12 @@ booktitle={2019 IEEE International Conference on Robotics and Automation (ICRA)}
 title={Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles}, \
 year={2019}, \
 month={May}, \
-pages={forthcoming} \
+pages={5679-5685} \
+doi={10.1109/ICRA.2019.8794286} \
 }
 
 **IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles,” in *2019 IEEE International Conference on Robotics and Automation (ICRA)*, May 2019, forthcoming.
-
+A. Keipour, M. Mousaei, and S. Scherer, “Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles,” in *2019 IEEE International Conference on Robotics and Automation (ICRA)*, May 2019, pp.5679-5685. doi: 10.1109/ICRA.2019.8794286. 
 
 ## Authors
 
