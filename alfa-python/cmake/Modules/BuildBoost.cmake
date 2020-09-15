@@ -2,8 +2,8 @@
 # Build the Boost dependencies for the project using a specific version of python #
 #========================================================#
 
-set(BoostVersion 1.63.0)
-set(BoostMD5 1c837ecd990bb022d07e7aab32b09847)
+set(BoostVersion 1.74.0)
+set(BoostMD5 da07ca30dd1c0d1fdedbd487efee01bd)
 
 string(REGEX REPLACE "beta\\.([0-9])$" "beta\\1" BoostFolderName ${BoostVersion})
 string(REPLACE "." "_" BoostFolderName ${BoostFolderName})
