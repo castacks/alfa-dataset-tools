@@ -81,6 +81,32 @@ public:
     std::vector<long double> GetFieldsAsLongDouble(const std::string &field_label, int start_msg_index = 0, int n_messages = -1);
     std::vector<long double> GetFieldsAsLongDouble(int field_index, int start_msg_index = 0, int n_messages = -1);
 
+    // These functions are for the alfa-python use and are duplicates of the ones above
+    std::vector<std::string> GetFieldsAsStringByString(const std::string &field_label, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsString(field_label, start_msg_index, n_messages); }
+    std::vector<std::string> GetFieldsAsStringByIndex(int field_index, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsString(field_index, start_msg_index, n_messages); }
+
+    std::vector<int> GetFieldsAsIntByString(const std::string &field_label, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsInt(field_label, start_msg_index, n_messages); }
+    std::vector<int> GetFieldsAsIntByIndex(int field_index, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsInt(field_index, start_msg_index, n_messages); }
+
+    std::vector<long long> GetFieldsAsLongLongByString(const std::string &field_label, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsLongLong(field_label, start_msg_index, n_messages); }
+    std::vector<long long> GetFieldsAsLongLongByIndex(int field_index, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsLongLong(field_index, start_msg_index, n_messages); }
+
+    std::vector<double> GetFieldsAsDoubleByString(const std::string &field_label, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsDouble(field_label, start_msg_index, n_messages); }
+    std::vector<double> GetFieldsAsDoubleByIndex(int field_index, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsDouble(field_index, start_msg_index, n_messages); }
+
+    std::vector<long double> GetFieldsAsLongDoubleByString(const std::string &field_label, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsLongDouble(field_label, start_msg_index, n_messages); }
+    std::vector<long double> GetFieldsAsLongDoubleByIndex(int field_index, int start_msg_index = 0, int n_messages = -1)
+    { return GetFieldsAsLongDouble(field_index, start_msg_index, n_messages); }
+
 private:
     // Member Functions
     Message TokensToMessage(const VecString &tokens);

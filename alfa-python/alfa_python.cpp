@@ -36,9 +36,6 @@ using namespace boost::python;
 // Defines a python module which will be named "alfa-python"
 BOOST_PYTHON_MODULE(alfa_python)
 {
-    // Declares class Bonjour, specifying the constructor, the greet function
-    // and declaring msg as an attribute visible from python, which can be queried
-		// and set through the C++ get and set functions.
 
 	class_<alfa::Sequence>("Sequence", init<std::string, std::string>())
 		// Class Data Members
@@ -74,16 +71,18 @@ BOOST_PYTHON_MODULE(alfa_python)
 		.def("HasHeaderField", &alfa::Topic::HasHeaderField)
 		.def("FindLabelIndex", &alfa::Topic::FindLabelIndex)
 		.def("Clear", &alfa::Topic::Clear)
-		.def("GetFieldsAsStringByName", &alfa::Topic::GetFieldsAsStringByName)
+		.def("GetTimes", &alfa::Topic::GetTimes)
+		.def("GetHeaders", &alfa::Topic::GetHeaders)
+		.def("GetFieldsAsStringByString", &alfa::Topic::GetFieldsAsStringByString)
 		.def("GetFieldsAsStringByIndex", &alfa::Topic::GetFieldsAsStringByIndex)
-		.def("GetFieldsAsIntByName", &alfa::Topic::GetFieldsAsLongLongByName)
+		.def("GetFieldsAsIntByString", &alfa::Topic::GetFieldsAsIntByString)
 		.def("GetFieldsAsIntByIndex", &alfa::Topic::GetFieldsAsIntByIndex)
-		.def("GetFieldsAsLongLongByName", &alfa::Topic::GetFieldsAsLongLongByIndex)
-		.def("GetFieldsAsLongLongByIndex", &alfa::Topic::GetFieldsAsDoubleByName)
-		.def("GetFieldsAsDoubleByName", &alfa::Topic::GetTimes)
-		.def("GetFieldsAsDoubleByIndex", &alfa::Topic::GetTimes)
-		.def("GetFieldsAsLongDoubleByName", &alfa::Topic::GetTimes)
-		.def("GetFieldsAsLongDoubleByIndex", &alfa::Topic::GetTimes)
+		.def("GetFieldsAsLongLongByString", &alfa::Topic::GetFieldsAsLongLongByString)
+		.def("GetFieldsAsLongLongByIndex", &alfa::Topic::GetFieldsAsLongLongByIndex)
+		.def("GetFieldsAsDoubleByString", &alfa::Topic::GetFieldsAsDoubleByString)
+		.def("GetFieldsAsDoubleByIndex", &alfa::Topic::GetFieldsAsDoubleByIndex)
+		.def("GetFieldsAsLongDoubleByString", &alfa::Topic::GetFieldsAsLongDoubleByString)
+		.def("GetFieldsAsLongDoubleByIndex", &alfa::Topic::GetFieldsAsLongDoubleByIndex)
 		;
 
 	// class_<alfa::Commons>("Commons")
