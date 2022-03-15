@@ -6,7 +6,7 @@ This repository contains the basic tools to work with the AIR Lab Fault Detectio
 
 For more information about the dataset, please refer to [http://theairlab.org/alfa-dataset](http://theairlab.org/alfa-dataset).
 
-For more information about this project and the publications related to the dataset and this work, please refer to [http://theairlab.org/fault-detection-project](http://theairlab.org/fault-detection-project).
+For more information about this project and the publications related to the dataset and this work, please refer to [https://theairlab.org/fault-detection](https://theairlab.org/fault-detection).
 
 ## Description of Tools
 
@@ -27,24 +27,26 @@ For more information, please refer to each individual package about how to insta
 ## Citation
 
 ### Tools and Dataset
-The tools and the dataset are provided with the following paper ([available on arXiv](https://arxiv.org/abs/1907.06268)). Please cite the following publicarion if you use either the tools or the dataset:
+The tools and the dataset are provided with the following paper [published in IJRR](https://doi.org/10.1177%2F0278364920966642) (also [available on arXiv](https://arxiv.org/abs/1907.06268)). Please cite the following publication if you use either the tools or the dataset:
 
 **BibTeX:** \
-@article{keipour:dataset:2020, \
+@article{keipour:dataset:2021, \
 author={Azarakhsh Keipour and Mohammadreza Mousaei and Sebastian Scherer}, \
-title={ALFA: A Dataset for UAV Fault and Anomaly Detection}, \
+title={{ALFA}: A Dataset for {UAV} Fault and Anomaly Detection}, \
 journal = {The International Journal of Robotics Research}, \
-volume = {}, \
-number = {}, \
-pages = {}, \
-year = {In press}, \
+volume = {40}, \
+number = {2-3}, \
+pages = {515-520}, \
+year = {2021}, \
+doi = {10.1177/0278364920966642}, \
+URL = {https://doi.org/10.1177/0278364920966642}, \
 }
 
 **IEEE Style:** \
-A.  Keipour,  M.  Mousaei,  and  S.  Scherer,  “ALFA:  A  dataset  for  UAV fault  and  anomaly  detection,” *The  International  Journal of  Robotics Research*, In press.
+A. Keipour, M. Mousaei, and S. Scherer, “ALFA: A dataset for UAV fault and anomaly detection,” The International Journal of Robotics Research, vol. 40, no. 2-3, pp. 515–520, 2021. doi: 10.1177/0278364920966642.
 
 ### Portions of Dataset
-Some portions of the dataset are released in the following publication ([available on arXiv](https://arxiv.org/abs/1907.00511)). If you use any of those sequences, please also cite this paper:
+Some portions of the dataset are released in the following [ICRA 2019 publication](https://ieeexplore.ieee.org/document/8794286) (also [available on arXiv](https://arxiv.org/abs/1907.00511)). If you use any of those sequences, please also cite this paper:
 
 **BibTeX:** \
 @inproceedings{keipour:detection:2019, \
