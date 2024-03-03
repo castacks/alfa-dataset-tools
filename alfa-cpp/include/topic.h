@@ -54,6 +54,15 @@ public:
     Topic(const std::string &filename = "", const std::string &topic_name = "N/A");
 
     // Member Functions
+    Topic& operator=(const Topic& other) {
+        if (this != &other) {
+            // 实现赋值逻辑
+        }
+        return *this;
+    }
+    bool operator==(const Topic& other) const {
+        return Name == other.Name;
+    }
     bool ReadFromFile(const std::string &filename);
     int Print(int n_start = 0, int n_messages = -1, const std::string &field_separator = " | ") const;
     int PrintHeader(const std::string &field_separator = " | ") const;
@@ -152,6 +161,7 @@ Topic::Topic(const std::string &filename, const std::string &topic_name)
     if (!filename.empty())
         ReadFromFile(filename);
 }
+  
 
 // Load a CSV file containing an ALFA dataset topic.
 bool Topic::ReadFromFile(const std::string &filename)

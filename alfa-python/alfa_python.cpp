@@ -22,6 +22,7 @@
  *
  *   ***************************************************************************/
 #include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/numpy.hpp>
 #include <iostream>
 #include <string>
@@ -33,30 +34,21 @@
 
 using namespace boost::python;
 
+bool operator==(const alfa::Topic& left, const alfa::Topic& right)
+{
+    return left.Name == right.Name;
+}
+
+bool operator==(const alfa::Sequence::MessageIndex& left, const alfa::Sequence::MessageIndex& right)
+{
+    return left.TopicIdx == right.TopicIdx && left.MessageIdx == right.MessageIdx;
+}
+
 // Defines a python module which will be named "alfa-python"
 BOOST_PYTHON_MODULE(alfa_python)
 {
-
-	class_<alfa::Sequence>("Sequence", init<std::string, std::string>())
-		// Class Data Members
-		.def_readwrite("Name", &alfa::Sequence::Name)
-		.def_readwrite("DirectoryPath", &alfa::Sequence::DirectoryPath)
-		.def_readonly("Topics", &alfa::Sequence::Topics)
-		.def_readonly("MessageIndexList", &alfa::Sequence::MessageIndexList)
-	  // Member Functions
-		.def("LoadSequence", &alfa::Sequence::LoadSequence)
-	  .def("IsInitialized", &alfa::Sequence::IsInitialized)
-	  .def("Clear", &alfa::Sequence::Clear)
-	  .def("GetMessage", &alfa::Sequence::GetMessage)
-	  .def("PrintBriefInfo", &alfa::Sequence::PrintBriefInfo)
-	  .def("GetFaultTopics", &alfa::Sequence::GetFaultTopics)
-	  .def("GetTotalDuration", &alfa::Sequence::GetTotalDuration)
-	  .def("GetNormalFlightDuration", &alfa::Sequence::GetNormalFlightDuration)
-	  .def("FindFirstFaultMessage", &alfa::Sequence::FindFirstFaultMessage)
-	  .def("FindTopicIndex", &alfa::Sequence::FindTopicIndex)
-		;
-
-	class_<alfa::Topic>("Topic", init<std::string, std::string>())
+    
+    class_<alfa::Topic>("Topic", init<std::string, std::string>())
 		// Class Data Members
 		.def_readwrite("Name", &alfa::Topic::Name)
 		.def_readwrite("FileName", &alfa::Topic::FileName)
@@ -84,6 +76,60 @@ BOOST_PYTHON_MODULE(alfa_python)
 		.def("GetFieldsAsLongDoubleByString", &alfa::Topic::GetFieldsAsLongDoubleByString)
 		.def("GetFieldsAsLongDoubleByIndex", &alfa::Topic::GetFieldsAsLongDoubleByIndex)
 		;
+
+	class_<alfa::Sequence>("Sequence", init<std::string, std::string>())
+		// Class Data Members
+		.def_readwrite("Name", &alfa::Sequence::Name)
+		.def_readwrite("DirectoryPath", &alfa::Sequence::DirectoryPath)
+		.def_readonly("Topics", &alfa::Sequence::Topics)
+		.def_readonly("MessageIndexList", &alfa::Sequence::MessageIndexList)
+	  // Member Functions
+		.def("LoadSequence", &alfa::Sequence::LoadSequence)
+	  .def("IsInitialized", &alfa::Sequence::IsInitialized)
+	  .def("Clear", &alfa::Sequence::Clear)
+	  .def("GetMessage", &alfa::Sequence::GetMessage)
+	  .def("PrintBriefInfo", &alfa::Sequence::PrintBriefInfo)
+	  .def("GetFaultTopics", &alfa::Sequence::GetFaultTopics)
+	  .def("GetTotalDuration", &alfa::Sequence::GetTotalDuration)
+	  .def("GetNormalFlightDuration", &alfa::Sequence::GetNormalFlightDuration)
+	  .def("FindFirstFaultMessage", &alfa::Sequence::FindFirstFaultMessage)
+	  .def("FindTopicIndex", &alfa::Sequence::FindTopicIndex)
+		;
+
+	class_<alfa::Sequence::MessageIndex>("MessageIndex", init<int, int>())
+		.def_readwrite("TopicIdx", &alfa::Sequence::MessageIndex::TopicIdx)
+		.def_readwrite("MessageIdx", &alfa::Sequence::MessageIndex::MessageIdx)
+		;
+
+	class_<alfa::Message>("Message")
+		.def_readwrite("DateTime", &alfa::Message::DateTime)
+		.def_readwrite("Header", &alfa::Message::Header)
+		.def_readwrite("Fields", &alfa::Message::Fields)
+		;
+
+	class_<alfa::DateTime>("DateTime")
+		.def_readwrite("Year", &alfa::DateTime::Year)
+		.def_readwrite("Month", &alfa::DateTime::Month)
+		.def_readwrite("Day", &alfa::DateTime::Day)
+		.def_readwrite("Hour", &alfa::DateTime::Hour)
+		.def_readwrite("Minute", &alfa::DateTime::Minute)
+		.def_readwrite("Second", &alfa::DateTime::Second)
+		.def_readwrite("Nanosecond", &alfa::DateTime::Nanosecond)
+		.def("ToString", &alfa::DateTime::ToString)
+		.def(self - self)
+		;
+
+	class_<std::vector<alfa::Topic>>("VectorTopic")
+        .def(vector_indexing_suite<std::vector<alfa::Topic>>());
+
+	class_<std::vector<alfa::Sequence::MessageIndex>>("VectorMessageIndex")
+        .def(vector_indexing_suite<std::vector<alfa::Sequence::MessageIndex>>());
+
+	class_<std::vector<double>>("VectorDouble")
+        .def(vector_indexing_suite<std::vector<double>>());
+
+	class_<std::vector<alfa::DateTime>>("VectorDateTime")
+        .def(vector_indexing_suite<std::vector<alfa::DateTime>>());
 
 	// class_<alfa::Commons>("Commons")
 	// 	// Class Data Members
