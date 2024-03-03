@@ -51,6 +51,15 @@ public:
         int TopicIdx; int MessageIdx; 
         MessageIndex(int topic_idx = -1, int message_idx = -1)
             : TopicIdx(topic_idx), MessageIdx(message_idx) {}
+        MessageIndex& operator=(const MessageIndex& other) {
+            if (this != &other) {
+                // 实现赋值逻辑
+            }
+            return *this;
+        }
+        bool operator==(const MessageIndex& other) const {
+            return TopicIdx == other.TopicIdx && MessageIdx == other.MessageIdx;
+        }
     };
 
     // Class Data Members
