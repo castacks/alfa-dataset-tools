@@ -50,7 +50,7 @@ def ParseCommandLine(argc, argv, out_sequence_path, out_sequence_name):
     
 
     #  Add the path separator to the path
-    if (not out_sequence_path or out_sequence_path[out_sequence_path.length() - 1] != Commons.FilePathSeparator) 
+    if (not out_sequence_path or out_sequence_path[out_sequence_path.length() - 1] != Commons.FilePathSeparator): 
         out_sequence_path += Commons.FilePathSeparator
 
     return true
